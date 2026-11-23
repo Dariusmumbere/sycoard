@@ -323,9 +323,32 @@ input{font:inherit}
 @keyframes fade{from{opacity:0}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
 
+
+/* ---------- ONLINE PLAY ---------- */
+.mode:nth-child(5){--a:#8b6cff;--g:radial-gradient(90% 70% at 50% 0%,rgba(190,185,255,.7),transparent 62%),radial-gradient(70% 55% at 0% 100%,rgba(120,200,255,.35),transparent 62%);animation-delay:.33s;grid-column:1/-1;min-height:clamp(150px,16vw,190px)}
+.on-card{padding:22px;margin-top:18px}
+.on-status{display:flex;align-items:center;gap:10px;font-weight:700;font-size:13px;padding:10px 14px;border-radius:14px;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.22);margin-bottom:18px}
+.on-status i{width:10px;height:10px;border-radius:50%;background:#f5a91a;flex:none;animation:pulse 1.2s infinite}
+.on-status.ok i{background:#4fd982;animation:none}
+.on-status.bad i{background:#ff6b6f;animation:none}
+.on-split{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+@media (max-width:700px){.on-split{grid-template-columns:1fr}}
+.on-box{padding:16px;border-radius:20px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.2)}
+.on-box p{font-size:13px;line-height:1.5;color:#d6d3ea;margin:6px 0 14px}
+.codein{width:100%;padding:13px;border-radius:14px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.28);color:#fff;font-weight:900;font-size:26px;letter-spacing:.35em;padding-left:.35em;text-align:center;text-transform:uppercase;outline:none;margin-top:6px}
+.codein:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(154,134,230,.5)}
+.on-err{color:#ff9a9d;font-weight:700;font-size:13px;min-height:18px;margin-top:12px;text-align:center}
+.bigcode{font-family:'Orbitron','Montserrat',sans-serif;font-weight:900;font-size:clamp(40px,13vw,76px);letter-spacing:.18em;padding-left:.18em;margin:10px 0;
+  background:linear-gradient(100deg,#d9820f 0%,#fff3b8 30%,#f7c948 55%,#d9820f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(124,92,255,.7))}
+.conn{position:fixed;top:0;left:0;right:0;z-index:120;text-align:center;padding:9px 12px;font-weight:800;font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;background:#b3261e;color:#fff;transform:translateY(-110%);transition:transform .3s}
+.conn.warn{background:#a86a00}
+.conn.show{transform:none}
+
 </style>
 </head>
 <body>
+<!-- ONLINE PLAY: paste your Render backend URL here (no trailing slash). You can also open the page with ?api=https://... once. -->
+<script>window.RANKCO_API_URL = 'https://rankco.onrender.com';</script>
 <!-- RANKCO recovery coin (shared by the board trays, player cards, buttons and log) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -359,6 +382,7 @@ input{font:inherit}
   </defs>
 </svg>
 <div id="app">
+  <div class="conn" id="conn" role="status" aria-live="polite"></div>
 
   <!-- SCREEN 0 : LANDING – logo + "Sycoard Games" only; leaves by itself after 3 seconds -->
   <section id="s-splash" class="screen active" aria-label="Sycoard Games">
@@ -406,6 +430,11 @@ input{font:inherit}
       <p class="sub">How would you like to play RANKCO today?</p>
       <div class="modes" id="modeGrid"></div>
     </div>
+  </section>
+
+  <!-- SCREEN 2b : ONLINE LOBBY -->
+  <section id="s-online" class="screen" aria-label="Play online">
+    <div class="wrap" id="onlineRoot"></div>
   </section>
 
   <!-- SCREEN 3 : PLAYER SETUP -->
@@ -908,15 +937,16 @@ const RankcoAI = (() => {
     three:    { icon: '👨‍👦‍👦', title: 'Three Players', desc: 'Bring another player into the competition.', humans: 3, tag: 'Same device' },
     four:     { icon: '👨‍👩‍👦‍👦', title: 'Four Players', desc: 'Experience the complete RANKCO competition.', humans: 4, tag: 'Same device' },
   };
-  const MODE_KEYS = ['computer', 'two', 'three', 'four'];
+  MODES.online = { icon: '🌐', title: 'Play Online', desc: 'Play a friend on another device – create a room and share the code.', tag: '2 players · Internet' };
+  const MODE_KEYS = ['computer', 'two', 'three', 'four', 'online'];
 
   /* app-level state – survives navigation so Back never loses selections */
-  const app = { screen: 'splash', mode: null, setups: {}, session: null, busy: false, loop: 0, opts: [], view: {}, log: [] };
+  const app = { screen: 'splash', online: null, mode: null, setups: {}, session: null, busy: false, loop: 0, opts: [], view: {}, log: [] };
 
   /* ===================================================================
      NAVIGATION
      =================================================================== */
-  const ORDER = ['splash', 'welcome', 'modes', 'setup', 'game', 'results'];
+  const ORDER = ['splash', 'welcome', 'modes', 'online', 'setup', 'game', 'results'];
   function go(name) {
     const idx = ORDER.indexOf(name);
     ORDER.forEach((n, i) => {
@@ -955,7 +985,7 @@ const RankcoAI = (() => {
     $$('.mode').forEach((b) => b.onclick = () => {
       app.mode = b.dataset.mode;
       $$('.mode').forEach((x) => x.classList.toggle('selected', x === b));
-      setTimeout(() => { renderSetup(); go('setup'); }, 320);
+      setTimeout(() => { if (app.mode === 'online') { renderOnline(); go('online'); } else { renderSetup(); go('setup'); } }, 320);
     });
   }
   $('#modesBack').onclick = () => go('welcome');
@@ -1221,7 +1251,11 @@ const RankcoAI = (() => {
   function startGame(again) {
     const mode = app.mode, s = ensureSetup(mode), seats = seatsOf(mode);
     const cfg = { players: seats.map((x) => ({ name: x.name, color: x.color, type: x.ai ? 'ai' : 'human', difficulty: x.ai ? s.difficulty : null })), startColor: s.first === 'random' ? null : s.first };
-    app.session = { cfg, state: E.createGame(cfg) };
+    if (app.online) olLeave(true);
+    beginSession(cfg, E.createGame(cfg));
+  }
+  function beginSession(cfg, state) {
+    app.session = { cfg, state };
     app.log = []; app.busy = false; app.loop++;
     $('#board').innerHTML = boardSVG(app.session.state.players);
     $('#tokens').innerHTML = tokensHTML(app.session.state.players); fitBoard();
@@ -1273,9 +1307,9 @@ const RankcoAI = (() => {
         if (t.p < 0) return `<span class="tk">T${ti + 1} Waiting</span>`;
         return `<span class="tk${t.frozen ? ' f' : ''}">T${ti + 1} ${'★'.repeat(E.levelOf(t.p))} Round ${E.levelOf(t.p)}/${E.LAYERS}${t.frozen ? ' ❄' : ''}</span>`;
       }).join('');
-      return `<div class="pl${pi === s.turn && s.phase !== 'over' ? ' me' : ''}" style="--c:${HEX[pl.color]}"><b>${esc(pl.name)}</b>
+      return `<div class="pl${pi === s.turn && s.phase !== 'over' ? ' me' : ''}" style="--c:${HEX[pl.color]}"><b>${esc(pl.name)}${app.online && app.online.pid === pi ? ' (you)' : ''}</b>
         <div class="coins" title="Recovery coins">${[0, 1].map((i) => i < pl.coins ? '<svg class="rc" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg>' : '<span class="rc off"></span>').join('')}</div>
-        <span class="ty">${CNAME[pl.color]} · ${pl.type === 'ai' ? DIFF[pl.difficulty] + ' AI' : 'Human'}</span><div class="toks">${toks}</div></div>`;
+        <span class="ty">${CNAME[pl.color]} · ${pl.type === 'ai' ? DIFF[pl.difficulty] + ' AI' : (app.online ? 'Online' : 'Human')}</span><div class="toks">${toks}</div></div>`;
     }).join('');
   }
 
@@ -1302,12 +1336,12 @@ const RankcoAI = (() => {
     $$('.tok').forEach((t) => t.classList.remove('can'));
     app.opts = [];
     if (s.phase === 'over') { box.innerHTML = ''; st.innerHTML = 'Game over'; return; }
-    if (app.busy) { box.innerHTML = ''; return; }
-    const actor = s.players[s.awaiting], mine = actor.type !== 'ai';
+    if (app.busy || (app.online && app.online.sent)) { box.innerHTML = ''; return; }
+    const actor = s.players[s.awaiting], mine = app.online ? s.awaiting === app.online.pid : actor.type !== 'ai';
     const auto = E.autoAction(s);
     if (!mine || auto) {
       st.innerHTML = auto && mine ? `${esc(actor.name)}<small>${auto.type === 'freeze' ? 'No other move – token freezes.' : auto.type === 'pass' ? 'No legal move.' : 'Only one move available.'}</small>` : `${esc(actor.name)}<small>is playing…</small>`;
-      box.innerHTML = `<div class="thinking"><span></span><span></span><span></span>${mine ? '' : ' Thinking…'}</div>`;
+      box.innerHTML = `<div class="thinking"><span></span><span></span><span></span>${mine ? '' : (app.online ? ' Waiting…' : ' Thinking…')}</div>`;
       return;
     }
     const opts = E.listOptions(s).map((o) => { const c = Object.assign({}, o); delete c.free0; return c; });
@@ -1338,6 +1372,7 @@ const RankcoAI = (() => {
 
   /* ---- the single input path: human click, AI, (later) network ---- */
   async function dispatch(action) {
+    if (app.online) return olSend(action);
     if (app.busy || !app.session) return;
     const my = app.loop, prev = app.session.state;
     const res = E.apply(prev, action);
@@ -1425,9 +1460,9 @@ const RankcoAI = (() => {
         <div class="nm"><i></i>${esc(pl.name)}<small>${pl.stats.rolls} rolls · ${pl.stats.setbacksGiven} setbacks dealt · ${pl.stats.setbacksTaken} taken · ${pl.stats.salutes} salutes · ${pl.stats.coinsSpent} coins used</small></div>
         <div class="pr">${pl.tokens.filter((t) => t.p === E.GOAL).length}/2 home</div></div>`).join('')}</div>
       <div class="res-actions"><button class="btn" id="again">Play again</button><button class="btn dark" id="chSetup">Change setup</button><button class="btn dark" id="toModes">Game modes</button></div>`;
-    $('#again').onclick = () => startGame(true);
-    $('#chSetup').onclick = () => { renderSetup(); go('setup'); };
-    $('#toModes').onclick = () => { renderModes(); go('modes'); };
+    if (app.online) { $('#again').remove(); $('#chSetup').remove(); }
+    else { $('#again').onclick = () => startGame(true); $('#chSetup').onclick = () => { renderSetup(); go('setup'); }; }
+    $('#toModes').onclick = () => { if (app.online) olLeave(false); renderModes(); go('modes'); };
     go('results'); confetti();
   }
   function confetti() {
@@ -1438,6 +1473,251 @@ const RankcoAI = (() => {
       document.body.appendChild(c); setTimeout(() => c.remove(), 6500);
     }
   }
+
+
+  /* ===================================================================
+     ONLINE PLAY  (FastAPI backend: REST for rooms, WebSocket for moves)
+     The engine is deterministic: every accepted move (with the server's dice)
+     is applied by both clients, so both boards stay identical. Offline modes
+     never touch any of this.
+     =================================================================== */
+  const API_BASE = (() => {
+    let u = window.RANKCO_API_URL || '';
+    try {
+      const q = new URLSearchParams(location.search).get('api');
+      if (q) localStorage.setItem('rankco_api', q);
+      u = q || localStorage.getItem('rankco_api') || u;
+    } catch (e) {}
+    return String(u).replace(/\/+$/, '');
+  })();
+  const API_SET = /^https?:\/\//.test(API_BASE) && !/YOUR-RANKCO/.test(API_BASE);
+  const ol = { name: '', color: 'blue', code: '', state: 'idle', pinging: false, busy: false };
+
+  function setConn(text, kind) {
+    const c = $('#conn');
+    c.textContent = text || '';
+    c.className = 'conn' + (text ? ' show' : '') + (kind === 'warn' ? ' warn' : '');
+  }
+  function olShowStatus() {
+    const el = $('#olStatus'); if (!el) return;
+    const map = { wake: ['', 'Connecting to the game server… (it may take up to a minute to wake up)'], ok: ['ok', 'Server ready'], bad: ['bad', API_SET ? 'Cannot reach the game server. Check your connection and try again.' : 'Backend URL not set – edit RANKCO_API_URL at the top of index.html'], idle: ['', 'Connecting…'] };
+    const m = map[ol.state] || map.idle;
+    el.className = 'on-status ' + m[0]; $('span', el).textContent = m[1];
+  }
+  async function olPing() {
+    if (ol.pinging) return;
+    if (!API_SET) { ol.state = 'bad'; olShowStatus(); return; }
+    ol.pinging = true; ol.state = 'wake'; olShowStatus();
+    for (let i = 0; i < 12; i++) {
+      try { const r = await fetch(API_BASE + '/health', { cache: 'no-store' }); if (r.ok) { ol.state = 'ok'; break; } } catch (e) {}
+      if (i < 11) await sleep(3000);
+    }
+    if (ol.state !== 'ok') ol.state = 'bad';
+    ol.pinging = false; olShowStatus();
+  }
+  async function olApi(path, body) {
+    const r = await fetch(API_BASE + path, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    let j = {}; try { j = await r.json(); } catch (e) {}
+    if (!r.ok) throw new Error(typeof j.detail === 'string' ? j.detail : 'Request failed (' + r.status + ')');
+    return j;
+  }
+
+  /* ---- screen: create / join ---- */
+  function renderOnline() {
+    if (app.online) return renderLobby();
+    const root = $('#onlineRoot');
+    root.innerHTML = `
+      <button class="back" id="olBack">‹ Back</button>
+      <h2 class="pill-title">Play Online</h2>
+      <p class="sub">Two players · each on their own device</p>
+      <div class="on-card glass">
+        <div class="on-status" id="olStatus"><i></i><span>Connecting…</span></div>
+        <div class="row"><label>Your name &amp; colour</label>
+          <div class="seat" style="--c:${HEX[ol.color]}"><div class="num">👤</div>
+            <input class="name" id="olName" maxlength="14" value="${esc(ol.name)}" placeholder="Your name" autocomplete="off" aria-label="Your name">
+            <div class="swatches" role="group" aria-label="Colour">${E.COLORS.map((c) => `<button class="sw${ol.color === c ? ' on' : ''}" style="--c:${HEX[c]}" data-c="${c}" title="${CNAME[c]}" aria-label="${CNAME[c]}"></button>`).join('')}</div>
+          </div></div>
+        <div class="on-split">
+          <div class="on-box"><div class="lbl">Host a game</div><p>Create a room, then send the code to your friend.</p><button class="btn" id="olCreate" style="width:100%">Create room</button></div>
+          <div class="on-box"><div class="lbl">Join a game</div><p>Got a code from a friend? Enter it here.</p>
+            <input class="codein" id="olCode" maxlength="5" value="${esc(ol.code)}" placeholder="CODE" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="Room code">
+            <button class="btn dark" id="olJoin" style="width:100%;margin-top:12px">Join room</button></div>
+        </div>
+        <div class="on-err" id="olErr"></div>
+      </div>`;
+    $('#olBack').onclick = () => { renderModes(); go('modes'); };
+    $('#olName').oninput = (e) => { ol.name = e.target.value; };
+    $('#olCode').oninput = (e) => { e.target.value = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ''); ol.code = e.target.value; };
+    $('#olCode').onkeydown = (e) => { if (e.key === 'Enter') olJoin(); };
+    $$('#onlineRoot .sw').forEach((b) => b.onclick = () => { ol.color = b.dataset.c; renderOnline(); });
+    $('#olCreate').onclick = olCreate;
+    $('#olJoin').onclick = olJoin;
+    olShowStatus();
+    if (ol.state !== 'ok') olPing();
+  }
+  const olErr = (t) => { const e = $('#olErr'); if (e) e.textContent = t || ''; };
+  function olBusy(on) { ol.busy = on; ['olCreate', 'olJoin'].forEach((id) => { const b = $('#' + id); if (b) b.disabled = on; }); }
+
+  async function olCreate() {
+    if (ol.busy) return;
+    if (!API_SET) { olErr('Backend URL not set – edit RANKCO_API_URL at the top of index.html'); return; }
+    olBusy(true); olErr('');
+    try { openRoom(await olApi('/api/rooms', { name: ol.name, color: ol.color })); }
+    catch (e) { olErr(e.message === 'Failed to fetch' ? 'Cannot reach the game server.' : e.message); olBusy(false); }
+  }
+  async function olJoin() {
+    if (ol.busy) return;
+    const code = (ol.code || '').trim().toUpperCase();
+    if (code.length < 4) { olErr('Enter the room code from your friend.'); return; }
+    if (!API_SET) { olErr('Backend URL not set – edit RANKCO_API_URL at the top of index.html'); return; }
+    olBusy(true); olErr('');
+    try { openRoom(await olApi('/api/rooms/' + encodeURIComponent(code) + '/join', { name: ol.name, color: ol.color })); }
+    catch (e) { olErr(e.message === 'Failed to fetch' ? 'Cannot reach the game server.' : e.message); olBusy(false); }
+  }
+  function openRoom(j) {
+    olBusy(false);
+    app.online = { code: j.code, token: j.token, seat: j.seat, pid: null, status: j.seat === 0 ? 'waiting' : 'joining', ws: null,
+                   q: [], pumping: false, recv: 0, sent: false, started: false, left: false, tries: 0, seats: [] };
+    renderLobby(); olConnect();
+  }
+  function renderLobby() {
+    const o = app.online, host = o.seat === 0;
+    $('#onlineRoot').innerHTML = `
+      <button class="back" id="olCancel">‹ Cancel</button>
+      <h2 class="pill-title">${host ? 'Waiting for opponent' : 'Joining game'}</h2>
+      <div class="on-card glass" style="text-align:center">
+        <div class="lbl">Room code</div>
+        <div class="bigcode">${esc(o.code)}</div>
+        ${host ? `<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:6px 0 16px">
+          <button class="btn" id="olCopy">Copy code</button><button class="btn dark" id="olLink">Copy invite link</button></div>` : ''}
+        <div class="thinking" style="justify-content:center"><span></span><span></span><span></span> ${host ? 'Waiting for your friend to join…' : 'Connecting to the match…'}</div>
+      </div>`;
+    $('#olCancel').onclick = () => { olLeave(true); renderOnline(); };
+    const cp = (txt, btn) => { try { navigator.clipboard.writeText(txt); const t = btn.textContent; btn.textContent = 'Copied ✓'; setTimeout(() => { btn.textContent = t; }, 1400); } catch (e) {} };
+    if (host) {
+      $('#olCopy').onclick = (e) => cp(o.code, e.currentTarget);
+      $('#olLink').onclick = (e) => cp(location.href.split('#')[0].split('?')[0] + '?room=' + o.code, e.currentTarget);
+    }
+  }
+
+  /* ---- socket ---- */
+  function olConnect() {
+    const o = app.online; if (!o || o.left) return;
+    const ws = new WebSocket(API_BASE.replace(/^http/, 'ws') + '/ws/' + encodeURIComponent(o.code) + '?token=' + encodeURIComponent(o.token));
+    o.ws = ws;
+    let hb = 0;
+    ws.onopen = () => { o.tries = 0; setConn(''); hb = setInterval(() => { try { ws.send('{"type":"ping"}'); } catch (e) {} }, 25000); };
+    ws.onmessage = (ev) => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (app.online === o) olOnMessage(o, m); };
+    ws.onclose = () => {
+      clearInterval(hb);
+      if (o.ws !== ws || o.left || app.online !== o) return;
+      setConn('Connection lost – reconnecting…');
+      o.tries++; setTimeout(() => { if (app.online === o && !o.left) olConnect(); }, Math.min(800 * o.tries, 5000));
+    };
+    ws.onerror = () => {};
+  }
+  function olResync() { const o = app.online; if (o && o.ws && o.ws.readyState === 1) o.ws.send('{"type":"sync"}'); }
+
+  function olOnMessage(o, m) {
+    switch (m.type) {
+      case 'state': olState(o, m); break;
+      case 'action':
+        if (!o.started) break;
+        if (m.seq < o.recv) break;                                   // already have it
+        if (m.seq > o.recv) { olResync(); break; }                   // gap → full resync
+        o.recv++; o.q.push(m); olPump(); break;
+      case 'presence': {
+        o.seats = m.seats;
+        const opp = m.seats.find((x) => x.pid !== o.pid && x.pid !== null);
+        const over = app.session && app.session.state.phase === 'over';
+        if (o.started && !over && opp && !opp.online) setConn('Opponent disconnected – waiting for them to return…', 'warn');
+        else if (o.ws && o.ws.readyState === 1) setConn('');
+        break;
+      }
+      case 'reject': o.sent = false; if (m.reason === 'seq') olResync(); else { renderControls(); } break;
+      case 'left': {
+        const over = app.session && app.session.state && app.session.state.phase === 'over';
+        if (over) break;
+        olLeave(false);
+        modal('<h3>Opponent left</h3><p>Your opponent left the match.</p>', [{ label: 'Back to menu', fn: () => { renderModes(); go('modes'); } }]);
+        break;
+      }
+      case 'error':
+        if (m.fatal) { olLeave(false); renderOnline(); olErr(m.error || 'Connection error'); go('online'); }
+        break;
+    }
+  }
+  function olState(o, m) {
+    o.seats = m.seats; o.pid = m.pid; o.status = m.status;
+    if (m.status === 'closed') {
+      olLeave(false);
+      modal('<h3>Room closed</h3><p>This match has ended.</p>', [{ label: 'Back to menu', fn: () => { renderModes(); go('modes'); } }]);
+      return;
+    }
+    if (m.status !== 'playing') return;                             // still waiting for the second player
+    if (!o.started || m.force || m.log.length < o.recv) { olStart(o, m); return; }
+    for (const e of m.log.slice(o.recv)) { o.recv++; o.q.push(e); }  // reconnect: catch up on missed moves
+    o.sent = false;
+    if (o.q.length) olPump(); else { renderAll(); loop(); }
+  }
+  function olStart(o, m) {
+    let st = E.createGame(m.cfg);
+    for (const e of m.log) {
+      const r = E.apply(st, e.action, { dice: e.dice });
+      if (r.error) { console.warn('replay stopped', r, e); break; }
+      st = r.state;
+    }
+    o.started = true; o.recv = m.log.length; o.q = []; o.pumping = false; o.sent = false;
+    setConn('');
+    beginSession(m.cfg, st);
+    if (m.log.length) pushLog('Match restored.');
+  }
+
+  /* ---- sending / receiving moves ---- */
+  function olSend(action) {
+    const o = app.online, s = app.session && app.session.state;
+    if (!o || !s || !o.started || o.left || app.busy || o.sent || o.pumping || o.q.length || s.phase === 'over') return;
+    if (s.awaiting !== o.pid || !o.ws || o.ws.readyState !== 1) return;
+    if (!E.listOptions(s).some((x) => x.type === action.type && (x.token === undefined || x.token === action.token))) return;
+    const a = { type: action.type }; if (action.token !== undefined) a.token = action.token; if (action.paid) a.paid = true;
+    o.sent = true;
+    o.ws.send(JSON.stringify({ type: 'action', seq: o.recv, pid: o.pid, action: a }));
+    renderControls();
+  }
+  async function olPump() {
+    const o = app.online;
+    if (!o || o.pumping || !o.started) return;
+    o.pumping = true;
+    const my = app.loop;
+    while (o.q.length) {
+      const m = o.q.shift(), s = app.session.state;
+      if (s.phase === 'over') continue;
+      const res = s.awaiting === m.pid ? E.apply(s, m.action, { dice: m.dice }) : { error: 'not their turn' };
+      if (res.error) { console.warn('out of sync', res, m); o.pumping = false; o.q = []; olResync(); return; }
+      app.busy = true; app.session.state = res.state; o.sent = false; renderControls();
+      await animate(res.events);
+      if (my !== app.loop) { o.pumping = false; return; }
+      app.busy = false; syncView(); renderAll();
+    }
+    o.pumping = false;
+    loop();
+  }
+  function olLeave(notify) {
+    const o = app.online; if (!o) return;
+    o.left = true;
+    try { if (notify && o.ws && o.ws.readyState === 1) o.ws.send('{"type":"leave"}'); if (o.ws) o.ws.close(); } catch (e) {}
+    app.online = null; app.loop++; app.busy = false; setConn('');
+  }
+
+  /* leaving an online match from the board */
+  (function () {
+    const orig = $('#gBack').onclick;
+    $('#gBack').onclick = () => {
+      if (!app.online) return orig();
+      modal('<h3>Leave this match?</h3><p>Leaving ends the online match for both players.</p>',
+        [{ label: 'Keep playing', dark: true }, { label: 'Leave match', fn: () => { olLeave(true); renderModes(); go('modes'); } }]);
+    };
+  })();
 
   /* ---- boot ---- */
   buildOrbit();
@@ -1453,7 +1733,9 @@ const RankcoAI = (() => {
   setTimeout(() => {
     if (app.screen !== 'splash') return;
     $('#bgBoard').innerHTML = boardSVG([]);                  // the real board artwork, no tokens
-    go('welcome');
+    let room = '';
+    try { room = (new URLSearchParams(location.search).get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); } catch (e) {}
+    if (room) { app.mode = 'online'; ol.code = room; renderOnline(); go('online'); } else go('welcome');
   }, 3000);
   window.RANKCO = { E, AI, app };   // handy for future online adapters / debugging
 })();
