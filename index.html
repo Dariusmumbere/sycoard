@@ -21,7 +21,7 @@
 html,body{height:100%;background:var(--bg-c);color:var(--ink);overflow:hidden}
 button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 input{font:inherit}
-#app{position:fixed;inset:0;background:radial-gradient(120% 80% at 50% 0%,var(--bg-a) 0%,var(--bg-b) 48%,var(--bg-c) 100%);overflow:hidden}
+#app{position:fixed;inset:0;overflow:hidden;overflow:clip;background:radial-gradient(120% 80% at 50% 0%,var(--bg-a) 0%,var(--bg-b) 48%,var(--bg-c) 100%);overflow:hidden}
 
 /* ---------- screens ---------- */
 .screen{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;opacity:0;visibility:hidden;pointer-events:none;
@@ -72,6 +72,45 @@ input{font:inherit}
 @keyframes letter{from{opacity:0;transform:translateY(40px) rotate(6deg);filter:blur(10px)}to{opacity:1;transform:none;filter:none}}
 @keyframes float{50%{transform:translateY(-8px)}}
 @keyframes glow{50%{box-shadow:0 0 0 8px rgba(154,134,230,.16),0 12px 40px rgba(110,80,230,.8),inset 0 1px 0 rgba(255,255,255,.5)}}
+
+/* ---------- SCREEN 0 : landing (logo + Sycoard Games) ---------- */
+#s-splash{display:flex;align-items:center;justify-content:center;background:radial-gradient(60% 50% at 50% 44%,rgba(124,92,255,.3),transparent 70%),radial-gradient(120% 80% at 50% 0%,#2b2f46 0%,#12131c 55%,#06070b 100%)}
+.sp-halo{position:absolute;left:50%;top:44%;width:min(125vw,760px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;opacity:.55;filter:blur(64px);pointer-events:none;
+  background:conic-gradient(from 0deg,rgba(43,125,233,0),rgba(43,125,233,.6),rgba(224,41,46,0),rgba(224,41,46,.6),rgba(30,158,74,0),rgba(30,158,74,.6),rgba(243,148,25,0),rgba(243,148,25,.6),rgba(43,125,233,0));animation:spin 12s linear infinite}
+.sp-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:30px;padding:24px;text-align:center}
+.sp-logo{display:flex;flex-direction:column;align-items:center;position:relative}
+.sp-brand{display:flex;align-items:center;gap:clamp(12px,3vw,22px);animation:rise 1s .7s both}
+.sp-brand b{font-weight:800;font-size:clamp(14px,4.2vw,24px);letter-spacing:.42em;padding-left:.42em;white-space:nowrap;
+  background:linear-gradient(100deg,#e08a12 0%,#fff3b8 30%,#f7c948 50%,#e08a12 80%,#fff3b8 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 14px rgba(245,169,26,.45));animation:shimmer 4s linear infinite}
+.sp-line{height:1.5px;width:clamp(28px,11vw,96px);animation:lineGrow 1s 1s both}
+.sp-line.l{background:linear-gradient(90deg,transparent,#f5a91a);transform-origin:right}
+.sp-line.r{background:linear-gradient(270deg,transparent,#f5a91a);transform-origin:left}
+@keyframes lineGrow{from{transform:scaleX(0);opacity:0}to{transform:none;opacity:1}}
+@keyframes shimmer{to{background-position:-250% 0}}
+
+/* ---------- SCREEN 1 : RANKCO GAME over the board ---------- */
+.bgboard{position:absolute;inset:0;display:grid;place-items:center;perspective:1500px;overflow:hidden;pointer-events:none}
+.bgb-tilt{width:min(160vw,150vh,1150px);opacity:.55;filter:saturate(1.2) brightness(.85) drop-shadow(0 40px 60px rgba(0,0,0,.7));
+  transform:rotateX(54deg) rotateZ(-30deg);animation:bgDrift 26s ease-in-out infinite alternate}
+.bgb-tilt svg{display:block;width:100%;height:auto}
+@keyframes bgDrift{from{transform:rotateX(50deg) rotateZ(-34deg) translateY(-2%) scale(1)}to{transform:rotateX(58deg) rotateZ(-22deg) translateY(3%) scale(1.06)}}
+.bg-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 46% at 50% 56%,rgba(6,7,12,.82),rgba(6,7,12,.45) 62%,transparent 100%),linear-gradient(180deg,rgba(6,7,12,.7),transparent 28%,transparent 70%,rgba(6,7,12,.8))}
+#s-welcome .slogan{text-shadow:0 2px 12px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.8)}
+#s-welcome .orbit{opacity:.5;z-index:1}
+.sparks{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
+.sparks i{position:absolute;bottom:-14px;border-radius:50%;background:radial-gradient(circle,#fff6c4 0%,#f7c948 45%,transparent 70%);opacity:0;animation:spark linear infinite}
+@keyframes spark{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-105vh) translateX(var(--dx,0px)) scale(1.2);opacity:0}}
+.title-rk{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,2vw,16px);line-height:1;animation:rise 1s .1s cubic-bezier(.2,.9,.2,1) both}
+.title-rk .t1{display:block;font-family:'Orbitron','Montserrat',sans-serif;font-weight:900;font-style:italic;font-size:clamp(52px,15.5vw,138px);letter-spacing:.04em;transform:skewX(-6deg);
+  background:linear-gradient(100deg,#d9820f 0%,#fff3b8 18%,#f7c948 36%,#e08a12 54%,#fff3b8 72%,#d9820f 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 22px rgba(124,92,255,.9)) drop-shadow(0 5px 0 rgba(58,30,140,.85)) drop-shadow(0 14px 24px rgba(0,0,0,.6));animation:shimmer 6s linear infinite}
+.title-rk .t2{display:flex;align-items:center;gap:clamp(8px,2.4vw,18px)}
+.title-rk .t2 em{font-style:normal;font-weight:800;font-size:clamp(18px,5.6vw,40px);letter-spacing:.62em;padding-left:.62em;color:#efeaff;text-shadow:0 0 18px rgba(154,134,230,.9),0 2px 6px rgba(0,0,0,.6)}
+.title-rk .t2 i{width:clamp(8px,2vw,13px);aspect-ratio:1;transform:rotate(45deg);border-radius:3px;box-shadow:0 0 14px currentColor;animation:pulse 1.8s ease-in-out infinite}
+.title-rk .t2 .d1{color:#2b7de9;background:#2b7de9}.title-rk .t2 .d2{color:#e0292e;background:#e0292e;animation-delay:.2s}
+.title-rk .t2 .d3{color:#1e9e4a;background:#1e9e4a;animation-delay:.4s}.title-rk .t2 .d4{color:#f39419;background:#f39419;animation-delay:.6s}
+@media (prefers-reduced-motion:reduce){.bgb-tilt{animation:none}}
 
 /* ---------- SCREEN 2 : game modes ---------- */
 .modes{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2.6vw,22px)}
@@ -146,17 +185,58 @@ input{font:inherit}
 .turn-banner .dot{width:16px;height:16px;border-radius:50%;background:var(--c);box-shadow:0 0 14px var(--c);animation:pulse 1.4s infinite}
 .turn-banner em{font-style:normal;font-size:11px;padding:3px 10px;border-radius:99px;background:var(--gold);color:#241500;letter-spacing:.1em}
 @keyframes pulse{50%{transform:scale(1.3)}}
-.board-wrap{position:relative;width:min(100%,calc((100dvh - 190px) * .819),680px);margin:0 auto}
-@media (max-width:900px){.board-wrap{width:min(100%,680px)}}
+.play-col{width:min(100%,max(300px,calc((100dvh - 290px) * .819)),680px);margin:0 auto}
+@media (max-width:900px){.play-col{width:min(100%,680px)}}
+.board-wrap{position:relative;width:100%}
 #board{display:block;width:100%;height:auto;filter:drop-shadow(0 18px 30px rgba(0,0,0,.6))}
-.tok{transition:transform .16s cubic-bezier(.3,.9,.4,1);cursor:default}
-.tok .body{filter:drop-shadow(0 .6px .7px rgba(0,0,0,.55))}
-.tok.can{cursor:pointer}
-.tok .halo{display:none;fill:none;stroke:#fff;stroke-width:.9;stroke-dasharray:1.4 1}
-.tok.can .halo{display:block;animation:halo 1s linear infinite,haloP .9s ease-in-out infinite alternate}
-@keyframes halo{to{stroke-dashoffset:-4.8}}@keyframes haloP{to{r:6.2}}
-.tok.frozen .ball{fill:#a9dcf5!important;stroke:#e9f9ff}
-.tok .snow{display:none}.tok.frozen .snow{display:block}
+
+/* ---- 3D tokens: real CSS-3D pieces (stacked rim + two faces) floating above the board ---- */
+.tokens{position:absolute;inset:0;pointer-events:none;isolation:isolate}
+.tok{--d:calc(var(--u,5px) * 7.4);--edge:var(--base);position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;
+  transform:translate(calc((var(--x,0) + 9) * var(--u,5px)),calc((var(--y,0) + 21) * var(--u,5px)));
+  transition:transform .16s cubic-bezier(.3,.9,.4,1)}
+.tok.frozen{--edge:#9fd9f2}
+.tok .sc{position:absolute;left:0;top:0;width:0;height:0;transform:scale(var(--s,1));transition:transform .2s}
+.tok .stage,.tok .shadow,.tok .glow,.tok .hit,.tok .halo{position:absolute;width:var(--d);height:var(--d);left:calc(var(--d) / -2);top:calc(var(--d) / -2);border-radius:50%}
+.tok .shadow{left:calc(var(--d) / -2 + var(--u,5px) * .5);top:calc(var(--d) / -2 + var(--u,5px) * 1.3);background:radial-gradient(closest-side,rgba(0,0,0,.62) 50%,rgba(0,0,0,0) 100%);transition:background .5s}
+.tok.frozen .shadow{background:radial-gradient(closest-side,rgba(40,110,170,.6) 50%,rgba(0,0,0,0) 100%)}
+.tok .glow{opacity:0;box-shadow:0 0 calc(var(--u,5px) * 2.6) calc(var(--u,5px) * .7) rgba(143,211,255,.95);transition:opacity .5s}
+.tok.frozen .glow{opacity:.85;animation:iceGlow 1.8s ease-in-out infinite alternate}
+@keyframes iceGlow{from{opacity:.45}to{opacity:.95}}
+.tok .stage{perspective:calc(var(--u,5px) * 46)}
+.tok .tilt,.tok .hop,.tok .flip,.tok .edge{position:absolute;inset:0;transform-style:preserve-3d}
+.tok .tilt{transform:rotateX(22deg)}
+.tok .flip{transform:rotateY(0deg)}
+.tok.frozen .flip{transform:rotateY(180deg)}
+.tok .edge i{position:absolute;inset:0;border-radius:50%;background-color:var(--edge);filter:brightness(var(--b,1));
+  transform:translateZ(calc(var(--u,5px) * var(--z,0)));transition:background-color .6s}
+.tok .face{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-family:'Montserrat',system-ui,sans-serif}
+.tok .fFront{transform:translateZ(calc(var(--u,5px) * .76));
+  background:radial-gradient(circle at 34% 28%,var(--hi) 0,var(--c) 46%,var(--lo) 100%);
+  box-shadow:inset 0 0 0 calc(var(--u,5px) * .2) rgba(255,255,255,.75),inset 0 0 0 calc(var(--u,5px) * .52) var(--lo),inset 0 calc(var(--u,5px) * -.35) calc(var(--u,5px) * .7) calc(var(--u,5px) * .35) rgba(0,0,0,.3)}
+.tok .fFront::before{content:"";position:absolute;left:15%;top:8%;width:46%;height:28%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0));transform:rotate(-22deg)}
+.tok .fFront b{position:relative;top:calc(var(--u,5px) * .45);font-weight:900;font-size:calc(var(--u,5px) * 3.5);line-height:1;color:#fff;
+  text-shadow:0 calc(var(--u,5px) * .14) 0 rgba(0,0,0,.5),0 0 calc(var(--u,5px) * .5) rgba(0,0,0,.25)}
+.tok .rk{position:absolute;top:calc(var(--u,5px) * .72);left:0;right:0;text-align:center;font-size:calc(var(--u,5px) * 1.2);line-height:1;letter-spacing:calc(var(--u,5px) * .02);color:#ffd34d;text-shadow:0 0 calc(var(--u,5px) * .25) #5a3b00,0 calc(var(--u,5px) * .08) 0 #5a3b00;white-space:nowrap}
+.tok .fBack{transform:rotateY(180deg) translateZ(calc(var(--u,5px) * .76));overflow:hidden;
+  background:radial-gradient(circle at 34% 28%,#fff 0,#d7f1ff 30%,#86cdf0 68%,#3f8cc0 100%);
+  box-shadow:inset 0 0 0 calc(var(--u,5px) * .2) #fff,inset 0 0 0 calc(var(--u,5px) * .52) #5fb0dc,inset 0 0 calc(var(--u,5px) * .9) rgba(30,100,160,.45)}
+.tok .fBack .snow{width:calc(var(--u,5px) * 4.7);height:calc(var(--u,5px) * 4.7);margin-top:calc(var(--u,5px) * -.5);filter:drop-shadow(0 0 calc(var(--u,5px) * .35) #fff)}
+.tok .fBack b{position:absolute;bottom:calc(var(--u,5px) * .85);left:0;right:0;text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.5);line-height:1;color:#1f5f8a}
+.tok .fBack::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,.8) 50%,transparent 64%);background-size:260% 100%;animation:glint 2.8s linear infinite}
+@keyframes glint{from{background-position:130% 0}to{background-position:-130% 0}}
+.tok .hit{width:calc(var(--d) * 1.15);height:calc(var(--d) * 1.15);left:calc(var(--d) * -.575);top:calc(var(--d) * -.575);pointer-events:auto;cursor:default}
+.tok.can .hit{cursor:pointer}
+.tok .halo{display:none;width:calc(var(--d) * 1.34);height:calc(var(--d) * 1.34);left:calc(var(--d) * -.67);top:calc(var(--d) * -.67);border:calc(var(--u,5px) * .24) dashed #fff;box-shadow:0 0 calc(var(--u,5px) * 1.2) rgba(255,255,255,.7)}
+.tok.can .halo{display:block;animation:haloSpin 3s linear infinite}
+@keyframes haloSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.09)}100%{transform:rotate(360deg) scale(1)}}
+/* freeze / unfreeze: the token hops up and flips over to show its ice face (and back again) */
+.tok.flipF .flip{animation:flipF 1.1s cubic-bezier(.35,.1,.25,1)}
+.tok.flipU .flip{animation:flipU 1s cubic-bezier(.35,.1,.25,1)}
+.tok.flipF .hop,.tok.flipU .hop{animation:hop 1s ease-in-out}
+@keyframes flipF{from{transform:rotateY(0deg)}to{transform:rotateY(540deg)}}
+@keyframes flipU{from{transform:rotateY(180deg)}to{transform:rotateY(720deg)}}
+@keyframes hop{0%,100%{transform:translate3d(0,0,0)}40%{transform:translate3d(0,calc(var(--u,5px) * -2.4),calc(var(--u,5px) * 9))}}
 .flash{position:absolute;left:50%;top:50%;translate:-50% -50%;pointer-events:none;font-weight:900;font-size:clamp(22px,6vw,44px);letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
   padding:12px 26px;border-radius:99px;background:rgba(6,6,12,.88);border:2px solid var(--c,#fff);box-shadow:0 0 34px var(--c,#fff);animation:flash 1.15s ease both;z-index:5}
 @keyframes flash{0%{opacity:0;transform:scale(.5)}18%{opacity:1;transform:scale(1.08)}30%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-24px)}}
@@ -169,6 +249,7 @@ input{font:inherit}
 @keyframes shake{25%{transform:rotate(-9deg) translateY(-2px)}75%{transform:rotate(9deg) translateY(2px)}}
 .status{font-weight:700;font-size:15px;line-height:1.4}.status small{display:block;font-weight:500;font-size:12.5px;color:#cfcbe8;margin-top:3px}
 #controls{margin-top:14px;display:grid;gap:9px}
+#controls:empty{display:none}
 .opt{display:flex;align-items:center;gap:10px;text-align:left;padding:13px 16px;border-radius:18px;font-weight:700;font-size:14px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.5);transition:.16s}
 .opt:hover{background:var(--btn);transform:translateX(3px)}
 .opt .i{font-size:20px;flex:none}.opt small{display:block;font-weight:500;font-size:11.5px;opacity:.8}
@@ -192,6 +273,27 @@ input{font:inherit}
 .log div{padding:5px 0;border-bottom:1px solid rgba(255,255,255,.1)}.log div:first-child{color:#fff;font-weight:700}
 .log h4,.panel h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#bdb8e0;margin-bottom:8px}
 .panel h4 .potb{float:right;font-size:10.5px;letter-spacing:.1em;padding:3px 10px;border-radius:99px;background:rgba(245,196,81,.18);border:1px solid #f5c451;color:#ffe9a0;margin-top:-3px}
+
+/* ---------- dice dock: below the board, on the right ---------- */
+.dock{display:flex;justify-content:flex-end;margin-top:12px}
+.dock .panel{width:min(100%,470px);margin:0;padding:14px 16px}
+.dock .panel{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"status die" "ctrl die";column-gap:16px;row-gap:10px;align-items:center}
+.dock .panel .die{grid-area:die;align-self:start}
+.dock .status{grid-area:status;min-width:0}
+.dock #controls{grid-area:ctrl;margin-top:0;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}
+.dock #controls .rollbtn,.dock #controls .alert,.dock #controls .thinking{grid-column:1/-1}
+.dock .rollbtn{width:auto;justify-self:start;padding:9px 22px;font-size:14px}
+.dock .panel .die{width:64px;height:64px;padding:9px;border-radius:15px}
+.dock .die i{width:11px;height:11px}
+@media (max-width:480px){.dock .panel{grid-template-areas:"status die" "ctrl ctrl"}}
+.dock .opt{padding:10px 12px;font-size:13px}
+/* ---------- RANKCO recovery coin ---------- */
+.rc{width:30px;height:30px;display:block;flex:none;filter:drop-shadow(0 2px 3px rgba(0,0,0,.65))}
+.rc.sm{width:28px;height:28px}
+.rc.xs{width:16px;height:16px;display:inline-block;vertical-align:-3px;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.6))}
+.rc.off{border:1.5px dashed rgba(255,255,255,.45);border-radius:50%;filter:none;background:rgba(0,0,0,.25)}
+.panel h4 .potb .rc{margin-right:4px}
+.opt .i{display:grid;place-items:center;min-width:28px}
 
 /* ---------- SCREEN 5 : results ---------- */
 #s-results{text-align:center}
@@ -224,15 +326,46 @@ input{font:inherit}
 </style>
 </head>
 <body>
+<!-- RANKCO recovery coin (shared by the board trays, player cards, buttons and log) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="rc-gold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1bd3a"/><stop offset="1" stop-color="#cf9418"/></linearGradient>
+    <linearGradient id="rc-six" gradientUnits="userSpaceOnUse" x1="0" y1="-16" x2="0" y2="25"><stop offset="0" stop-color="#fbcb3f"/><stop offset=".55" stop-color="#eca922"/><stop offset="1" stop-color="#b9780e"/></linearGradient>
+    <radialGradient id="rc-face" cx=".4" cy=".33" r=".9"><stop offset="0" stop-color="#2a231b"/><stop offset=".55" stop-color="#15110d"/><stop offset="1" stop-color="#070605"/></radialGradient>
+    <pattern id="rc-grain" width="16" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-9)"><path d="M0 1.6Q4 .8 8 1.7T16 1.5M0 4.8Q5 4 9 4.9T16 4.6" stroke="#4a3822" stroke-width=".4" fill="none" opacity=".4"/></pattern>
+    <path id="rc-arc-top" d="M-34.5 12.55A36.7 36.7 0 1 1 34.5 12.55"/>
+    <path id="rc-arc-bot" d="M-42.7 -7.5A43.35 43.35 0 1 0 42.7 -7.5"/>
+    <polygon id="rc-star" points="0,-3.4 .82,-1.13 3.23,-1.05 1.33,.43 2,2.75 0,1.4 -2,2.75 -1.33,.43 -3.23,-1.05 -.82,-1.13"/>
+    <g id="rc-chev" fill="none" stroke="#e0a82c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M-2.8 -3.9L0 -1.1L2.8 -3.9M-2.8 .9L0 3.7L2.8 .9"/></g>
+    <g id="rcoin">
+      <circle r="50" fill="#1b1409"/>
+      <circle r="49.2" fill="url(#rc-face)" stroke="#d9a42c" stroke-width="1"/>
+      <circle r="48.4" fill="url(#rc-grain)"/>
+      <circle r="46.4" fill="none" stroke="#caa02d" stroke-width=".5" opacity=".8"/>
+      <circle r="33.4" fill="none" stroke="#e0a82c" stroke-width="1.25"/>
+      <circle r="31.9" fill="none" stroke="#b98a22" stroke-width=".45" opacity=".7"/>
+      <text font-family="Montserrat,'Arial Black',Arial,sans-serif" font-weight="800" font-size="9.4" letter-spacing="1.2" fill="url(#rc-gold)" text-anchor="middle"><textPath href="#rc-arc-top" startOffset="50%">RANKCO GAME</textPath></text>
+      <text font-family="Montserrat,'Arial Black',Arial,sans-serif" font-weight="800" font-size="9.4" letter-spacing="1.2" fill="url(#rc-gold)" text-anchor="middle"><textPath href="#rc-arc-bot" startOffset="50%">RECOVERY COIN</textPath></text>
+      <use href="#rc-chev" x="-40.4" y="1.5"/><use href="#rc-chev" x="40.4" y="1.5"/>
+      <g fill="url(#rc-gold)">
+        <use href="#rc-star" transform="translate(-17.4 -20.7) rotate(-40) scale(1.15)"/><use href="#rc-star" transform="translate(-6.3 -26.3) rotate(-13.5) scale(1.15)"/>
+        <use href="#rc-star" transform="translate(6.3 -26.3) rotate(13.5) scale(1.15)"/><use href="#rc-star" transform="translate(17.4 -20.7) rotate(40) scale(1.15)"/>
+      </g>
+      <g fill="none" stroke="url(#rc-six)" stroke-width="8.8">
+        <circle cx=".9" cy="9.9" r="10.4"/>
+        <path d="M-9.5 9.9C-9.5 -3 -4.5 -10.6 3.5 -10.6C6.8 -10.6 9.2 -9.8 11.2 -8.2" stroke-linecap="butt"/>
+      </g>
+    </g>
+  </defs>
+</svg>
 <div id="app">
 
-  <!-- SCREEN 1 : WELCOME / LOGO -->
-  <section id="s-welcome" class="screen active" aria-label="RANKCO welcome">
-    <div class="orbit" id="orbit" aria-hidden="true"></div>
-    <div class="welcome-center">
-      <!-- LOGO: logo.png (place it in the same folder as index.html).
-           If the file is missing or fails to load, the built-in emblem + wordmark below is shown instead. -->
-      <div id="logo" style="display:flex;flex-direction:column;align-items:center;gap:14px">
+  <!-- SCREEN 0 : LANDING – logo + "Sycoard Games" only; leaves by itself after 3 seconds -->
+  <section id="s-splash" class="screen active" aria-label="Sycoard Games">
+    <div class="sp-halo" aria-hidden="true"></div>
+    <div class="sp-center">
+      <!-- LOGO: logo.png (same folder as index.html). If it fails to load, the built-in emblem is shown instead. -->
+      <div id="logo" class="sp-logo">
         <img id="logoImg" class="logo-img" src="logo.png" alt="RANKCO logo" decoding="async" fetchpriority="high">
         <div id="logoFallback" hidden style="display:none;flex-direction:column;align-items:center;gap:14px">
           <svg class="emblem" viewBox="0 0 100 100" aria-hidden="true">
@@ -246,9 +379,20 @@ input{font:inherit}
               <path d="M50 36l4.4 9 9.9 1.4-7.2 7 1.7 9.8L50 58.4l-8.8 4.8 1.7-9.8-7.2-7 9.9-1.4z" fill="#f5a91a" stroke="#fff" stroke-width="1.2" stroke-linejoin="round"/>
             </g>
           </svg>
-          <h1 class="wordmark" aria-label="RANKCO"><span>R</span><span>A</span><span>N</span><span>K</span><span>C</span><span>O</span></h1>
         </div>
       </div>
+      <div class="sp-brand"><span class="sp-line l"></span><b>SYCOARD GAMES</b><span class="sp-line r"></span></div>
+    </div>
+  </section>
+
+  <!-- SCREEN 1 : RANKCO GAME – the board in the background, slogan, Play -->
+  <section id="s-welcome" class="screen" aria-label="RANKCO game">
+    <div class="bgboard" aria-hidden="true"><div class="bgb-tilt"><svg id="bgBoard" viewBox="-9 -21 118 144"></svg></div></div>
+    <div class="orbit" id="orbit" aria-hidden="true"></div>
+    <div class="bg-veil" aria-hidden="true"></div>
+    <div class="sparks" id="sparks" aria-hidden="true"></div>
+    <div class="welcome-center">
+      <h1 class="title-rk" aria-label="RANKCO Game"><span class="t1">RANKCO</span><span class="t2"><i class="d1"></i><i class="d2"></i><em>GAME</em><i class="d3"></i><i class="d4"></i></span></h1>
       <p class="slogan"><b class="c1">Strategy.</b> <b class="c2">Luck.</b> <b class="c3">Decision Making.</b> <b class="c4">Risk Management.</b></p>
       <button class="btn play" id="playNow">Play Now</button>
     </div>
@@ -279,14 +423,22 @@ input{font:inherit}
     <div class="g-body">
       <div class="g-main">
         <div class="turn-banner" id="turnBanner"></div>
-        <div class="board-wrap" id="boardWrap"><svg id="board" viewBox="-9 -21 118 144" role="img" aria-label="RANKCO board"></svg></div>
+        <div class="play-col" id="playCol">
+          <div class="board-wrap" id="boardWrap">
+            <svg id="board" viewBox="-9 -21 118 144" role="img" aria-label="RANKCO board"></svg>
+            <div class="tokens" id="tokens"></div>
+          </div>
+          <!-- dice + roll controls: below the board, on the right -->
+          <div class="dock">
+            <div class="panel glass">
+              <div class="die" id="die"></div><div class="status" id="status"></div>
+              <div id="controls"></div>
+            </div>
+          </div>
+        </div>
       </div>
       <aside class="g-side">
-        <div class="panel glass">
-          <div class="dice-row"><div class="die" id="die"></div><div class="status" id="status"></div></div>
-          <div id="controls"></div>
-        </div>
-        <div class="panel glass"><h4>Players <span class="potb">🪙 Pot <b id="potN">0</b></span></h4><div id="players"></div></div>
+        <div class="panel glass"><h4>Players <span class="potb"><svg class="rc xs" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg>Pot <b id="potN">0</b></span></h4><div id="players"></div></div>
         <div class="panel glass"><h4>Game log</h4><div class="log" id="log"></div></div>
       </aside>
     </div>
@@ -335,9 +487,13 @@ const RankcoEngine = (() => {
   const SIDE = 9;                                          // tiles on each side of the board
   const RING = 4 * SIDE;                                   // 36 tiles on the shared loop (10 x 10 board)
   const LANE = 3;                                          // arrow tiles inside the board that lead to the centre
-  const GOAL = RING + LANE;                                // progress value of the centre (39)
+  const LAYERS = 4;                                        // 4 rounds, each on its own layer: outer ring (star 1) ... inner ring (star 4)
+  const S_OF = [9, 7, 5, 3];                               // tiles per side on each layer
+  const R_OF = S_OF.map((x) => x * 4);                     // 36, 28, 20, 12 tiles per layer
+  const OFF = [0, 36, 64, 84];                             // first progress value / first tile id of each layer
+  const GOAL = 96;                                         // progress value of the centre (36 + 28 + 20 + 12)                                // progress value of the centre (39)
   const YARD = -1;                                         // token outside the board
-  const FREEZE_FROM = 2 * SIDE;                                // three-star and four-star levels
+  const FREEZE_FROM = OFF[2];                                // three-star and four-star levels
   const START_COINS = 2;
   // Each colour owns one side of the board; its home tile is the corner where the side begins.
   const START_INDEX = { blue: 0, red: 9, green: 18, orange: 27 };
@@ -352,9 +508,12 @@ const RankcoEngine = (() => {
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   }
   const clone = (s) => JSON.parse(JSON.stringify(s));
-  const tileOf = (pl, p) => (p < 0 || p >= RING ? -1 : (START_INDEX[pl.color] + p) % RING);   // -1: off the loop (waiting, on the arrow lane, or home)
-  const levelOf = (p) => (p < 0 ? 0 : p >= GOAL ? 5 : Math.min(4, Math.floor(p / SIDE) + 1));
+  const tileOf = (pl, p) => (p < 0 || p >= GOAL ? -1 : OFF[layerOf(p)] + (COLORS.indexOf(pl.color) * S_OF[layerOf(p)] + p - OFF[layerOf(p)]) % R_OF[layerOf(p)]);   // -1: off the loop (waiting, on the arrow lane, or home)
+  const levelOf = (p) => (p < 0 ? 0 : p >= GOAL ? 5 : layerOf(p) + 1);
   const inPlay = (t) => t.p >= 0 && t.p < GOAL;
+  const layerOf = (p) => (p < 36 ? 0 : p < 64 ? 1 : p < 84 ? 2 : 3);
+  const isHome = (p) => OFF.includes(p);                   // a colour's home corner on any layer
+  const layerPos = (pl, p) => { const L = layerOf(p); return { L, k: (COLORS.indexOf(pl.color) * S_OF[L] + p - OFF[L]) % R_OF[L] }; };
 
   /* ---------- setup ---------- */
   function createGame(cfg) {
@@ -464,7 +623,7 @@ const RankcoEngine = (() => {
       if (oi === pi) return;
       op.tokens.forEach((ot, oti) => {
         // home tile protects; frozen tokens are unaffected by setbacks
-        if (inPlay(ot) && !ot.frozen && ot.p !== 0 && tileOf(op, ot.p) === tile) victims.push({ pi: oi, ti: oti });
+        if (inPlay(ot) && !ot.frozen && !isHome(ot.p) && tileOf(op, ot.p) === tile) victims.push({ pi: oi, ti: oti });
       });
     });
     let salute = false;
@@ -593,8 +752,8 @@ const RankcoEngine = (() => {
       .sort((a, b) => b.score - a.score).map((x) => x.pl);
   }
 
-  return { COLORS, SIDE, RING, LANE, GOAL, YARD, FREEZE_FROM, START_INDEX, SALUTE_OWNER,
-           createGame, listOptions, autoAction, apply, canMove, tileOf, levelOf, inPlay, progressOf, ranking };
+  return { COLORS, SIDE, RING, LAYERS, S_OF, R_OF, OFF, LANE, GOAL, YARD, FREEZE_FROM, START_INDEX, SALUTE_OWNER,
+           createGame, listOptions, autoAction, apply, canMove, tileOf, levelOf, inPlay, layerOf, layerPos, isHome, progressOf, ranking };
 })();
 
 
@@ -618,16 +777,17 @@ const RankcoAI = (() => {
     let score = P.coins * COIN_VALUE[d];
     const risk = d === 'hard' ? 1 : 0.5;
     P.tokens.forEach((t) => {
-      if (t.p === E.GOAL) { score += 110; return; }
+      if (t.p === E.GOAL) { score += E.GOAL + 70; return; }
       if (t.p >= 0) score += t.p + 8;
       if (t.frozen) score -= d === 'hard' ? 10 : 6;
-      if (E.inPlay(t) && !t.frozen && t.p > 0 && t.p < E.RING) {
-        const myTile = E.tileOf(P, t.p);
+      if (E.inPlay(t) && !t.frozen && t.p > 0) {
+        const mp = E.layerPos(P, t.p);
         s.players.forEach((op, oi) => {
           if (oi === me) return;
           op.tokens.forEach((ot) => {
-            if (!E.inPlay(ot) || ot.frozen || ot.p >= E.RING) return;
-            const dist = (myTile - E.tileOf(op, ot.p) + E.RING) % E.RING;
+            if (!E.inPlay(ot) || ot.frozen) return;
+            const oq = E.layerPos(op, ot.p); if (oq.L !== mp.L) return;
+            const dist = (mp.k - oq.k + E.R_OF[mp.L]) % E.R_OF[mp.L];
             if (dist >= 1 && dist <= 6) {
               const loss = (t.p <= 6 ? t.p + 8 : 6) * (P.coins > 0 ? 0.6 : 1);
               score -= (1 / 6) * loss * risk;
@@ -640,7 +800,7 @@ const RankcoAI = (() => {
     s.players.forEach((op, oi) => {
       if (oi === me) return;
       op.tokens.forEach((t) => {
-        if (t.p === E.GOAL) score -= 0.6 * 48; else if (t.p >= 0) score -= 0.6 * (t.p + 8);
+        if (t.p === E.GOAL) score -= 0.6 * (E.GOAL + 9); else if (t.p >= 0) score -= 0.6 * (t.p + 8);
         if (t.frozen) score += 3;
       });
     });
@@ -665,6 +825,7 @@ const RankcoAI = (() => {
     const paidOpts = opts.filter((o) => o.paid);
     const pass = { type: 'pass' };
 
+    if (difficulty === 'beginner') return freeOpts.length ? pick(freeOpts, r) : pass;   // random legal move, never spends coins
     if (difficulty === 'easy') {
       if (freeOpts.length) {
         const enter = freeOpts.find((o) => o.type === 'enter');
@@ -694,9 +855,9 @@ const RankcoAI = (() => {
     if (s.phase === 'roll') {
       const P = s.players[s.turn];
       const un = opts.find((o) => o.type === 'unfreeze_pay');
-      if (un && difficulty !== 'easy') {
+      if (un && difficulty !== 'easy' && difficulty !== 'beginner') {
         const t = P.tokens[un.token];
-        const worth = difficulty === 'hard' ? t.p >= 12 && (P.coins === 2 || t.p >= 28) : t.p >= 20 && P.coins === 2;
+        const worth = difficulty === 'hard' ? t.p >= 30 && (P.coins === 2 || t.p >= 70) : t.p >= 50 && P.coins === 2;
         if (worth) return un;
       }
       return { type: 'roll' };
@@ -706,9 +867,10 @@ const RankcoAI = (() => {
       // estimate what the setback would cost
       let q = t.p - 6;
       const loss = q < 0 ? t.p + 8 : 6;
+      if (difficulty === 'beginner') return { type: 'setback_accept', token: v.ti };
       if (difficulty === 'easy') return r() < 0.3 ? { type: 'setback_pay', token: v.ti } : { type: 'setback_accept', token: v.ti };
       const threshold = difficulty === 'hard' ? (op.coins === 1 ? 9 : 7) : 10;
-      return loss >= threshold || t.p >= 24 ? { type: 'setback_pay', token: v.ti } : { type: 'setback_accept', token: v.ti };
+      return loss >= threshold || t.p >= 58 ? { type: 'setback_pay', token: v.ti } : { type: 'setback_accept', token: v.ti };
     }
     const auto = E.autoAction(s);
     if (auto) return auto;
@@ -736,7 +898,9 @@ const RankcoAI = (() => {
   const HEX = { blue: '#2b7de9', red: '#e0292e', green: '#1e9e4a', orange: '#f39419' };
   const LIGHT = { blue: '#7db6ff', red: '#ff8a8d', green: '#62dd8b', orange: '#ffc06a' };
   const CNAME = { blue: 'Blue', red: 'Red', green: 'Green', orange: 'Orange' };
-  const DIFF = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+  const DIFF = { beginner: 'Beginner', easy: 'Easy', medium: 'Medium', hard: 'Hard' };
+  const COIN = '<svg class="rc sm" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg>';
+  const COINI = '<svg class="rc xs" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg>';
 
   const MODES = {
     computer: { icon: '🤖', title: 'Play vs Computer', desc: 'Challenge the computer in an exciting game of RANKCO.', tag: 'Easy · Medium · Hard' },
@@ -747,12 +911,12 @@ const RankcoAI = (() => {
   const MODE_KEYS = ['computer', 'two', 'three', 'four'];
 
   /* app-level state – survives navigation so Back never loses selections */
-  const app = { screen: 'welcome', mode: null, setups: {}, session: null, busy: false, loop: 0, opts: [], view: {}, log: [] };
+  const app = { screen: 'splash', mode: null, setups: {}, session: null, busy: false, loop: 0, opts: [], view: {}, log: [] };
 
   /* ===================================================================
      NAVIGATION
      =================================================================== */
-  const ORDER = ['welcome', 'modes', 'setup', 'game', 'results'];
+  const ORDER = ['splash', 'welcome', 'modes', 'setup', 'game', 'results'];
   function go(name) {
     const idx = ORDER.indexOf(name);
     ORDER.forEach((n, i) => {
@@ -761,6 +925,7 @@ const RankcoAI = (() => {
       el.classList.toggle('before', i < idx);
     });
     app.screen = name;
+    const ap = $('#app'); ap.scrollLeft = 0; ap.scrollTop = 0;   // never let the parked (off-screen) screens scroll the app sideways
     const el = $('#s-' + name);
     if (el.scrollTo) el.scrollTo(0, 0);
   }
@@ -840,7 +1005,7 @@ const RankcoAI = (() => {
     let h = '';
     if (mode === 'computer') {
       h += `<div class="row"><label>Computer opponents</label><div class="seg" id="aiCount">${[1, 2, 3].map((n) => `<button data-v="${n}" class="${s.aiCount === n ? 'on' : ''}">${n}</button>`).join('')}</div></div>
-            <div class="row"><label>AI difficulty</label><div class="seg" id="diff">${['easy', 'medium', 'hard'].map((d) => `<button data-v="${d}" class="${s.difficulty === d ? 'on' : ''}">${DIFF[d]}</button>`).join('')}</div></div>`;
+            <div class="row"><label>AI difficulty</label><div class="seg" id="diff">${['beginner', 'easy', 'medium', 'hard'].map((d) => `<button data-v="${d}" class="${s.difficulty === d ? 'on' : ''}">${DIFF[d]}</button>`).join('')}</div></div>`;
     }
     h += `<div class="row"><label>${mode === 'computer' ? 'You &amp; your opponents' : 'Players'}</label>`;
     seats.forEach((st) => {
@@ -898,7 +1063,8 @@ const RankcoAI = (() => {
      =================================================================== */
   const ringXY = (k) => (k < 9 ? [k, 0] : k < 18 ? [9, k - 9] : k < 27 ? [9 - (k - 18), 9] : [0, 9 - (k - 27)]);   // [col,row] on the 10 x 10 grid, clockwise from the top-left corner
   const cellXY = (c, r) => [c * 10 + 5, r * 10 + 5];
-  const tileCenter = (k) => { const [c, r] = ringXY(k % E.RING); return cellXY(c, r); };
+  const layerXY = (L, k) => { const S = 9 - 2 * L, a = Math.floor(k / S), j = k % S; return a === 0 ? [L + j, L] : a === 1 ? [9 - L, L + j] : a === 2 ? [9 - L - j, 9 - L] : [L, 9 - L - j]; };   // [col,row] of tile k on layer L, clockwise from that layer's top-left corner
+  const tileCenter = (id) => { const L = id < 36 ? 0 : id < 64 ? 1 : id < 84 ? 2 : 3; const [c, r] = layerXY(L, id - E.OFF[L]); return cellXY(c, r); };
   const rotCell = (r, c, n) => { for (let i = 0; i < n; i++) [r, c] = [c, 9 - r]; return [r, c]; };   // n quarter turns clockwise
   const rotOff = (o, n) => { let [x, y] = o; for (let i = 0; i < n; i++) [x, y] = [-y, x]; return [x, y]; };
   const cIdx = (color) => E.COLORS.indexOf(color);
@@ -909,7 +1075,7 @@ const RankcoAI = (() => {
   // waiting tokens and coins sit in a small tray outside the leather frame, next to the player's own home corner
   const TRAY = { blue: [-7, -19], red: [61, -19], green: [61, 112], orange: [-7, 112] }, TRAY_W = 46, TRAY_H = 10;
   const yardXY = (color, ti) => [TRAY[color][0] + 6.5 + ti * 10, TRAY[color][1] + 5];
-  const coinXY = (color, i) => [TRAY[color][0] + 30 + i * 7, TRAY[color][1] + 5];
+  const coinXY = (color, i) => [TRAY[color][0] + 31.4 + i * 7.8, TRAY[color][1] + 5];
   const star = (r, ri, n = 5) => Array.from({ length: n * 2 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / n, rr = i % 2 ? ri : r; return (Math.cos(a) * rr).toFixed(2) + ',' + (Math.sin(a) * rr).toFixed(2); }).join(' ');
 
   const DARKC = { blue: '#0b3a78', red: '#7a0f13', green: '#0a4a25', orange: '#8a4700' };
@@ -970,41 +1136,50 @@ const RankcoAI = (() => {
     // centre: the RANKCO logo
     h += `<rect x="40.5" y="40.5" width="19" height="19" rx="2.6" fill="#fff" stroke="#111" stroke-width=".9"/>`;
     h += window.LOGO_OK === false ? CENTRE_FALLBACK : `<image href="logo.png" x="44" y="44" width="12" height="12" preserveAspectRatio="xMidYMid meet"/>`;
-    // trays: waiting tokens + coins
+    // trays: waiting spots + the two recovery coins (3D tokens live in the HTML layer above the board)
     players.forEach((pl, pi) => {
       const [tx, ty] = TRAY[pl.color];
       h += `<rect x="${tx}" y="${ty}" width="${TRAY_W}" height="${TRAY_H}" rx="5" fill="rgba(6,6,12,.55)" stroke="${HEX[pl.color]}" stroke-width=".7"/>`;
       [0, 1].forEach((i) => {
         const [yx, yy] = yardXY(pl.color, i), [cx, cy] = coinXY(pl.color, i);
         h += `<circle cx="${yx}" cy="${yy}" r="4.3" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>
-              <circle id="cs-${pi}-${i}" cx="${cx}" cy="${cy}" r="2.1" fill="#f6b21b" stroke="#6b4600" stroke-width=".35"/>`;
+              <g id="cs-${pi}-${i}" transform="translate(${cx} ${cy})"><circle class="slot" r="3.4" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.55)" stroke-width=".4" stroke-dasharray=".9 .8" style="display:none"/>
+              <g class="cu"><circle r="3.5" cx=".3" cy=".55" fill="rgba(0,0,0,.4)"/><use href="#rcoin" transform="scale(.068)"/></g></g>`;
       });
     });
-    // tokens (top layer)
-    players.forEach((pl, pi) => pl.tokens.forEach((t, ti) => {
-      h += `<g class="tok" id="tok-${pi}-${ti}" data-pi="${pi}" data-ti="${ti}"><g class="sc">
-        <circle class="halo" r="5.4"/>
-        <g class="body"><circle class="ball" r="3.7" fill="${HEX[pl.color]}" stroke="#fff" stroke-width=".8"/><circle r="3.7" fill="url(#ball)"/>
-        <text y="1.35" text-anchor="middle" font-size="3.9" font-weight="900" fill="#fff" stroke="rgba(0,0,0,.35)" stroke-width=".25" paint-order="stroke">${ti + 1}</text>
-        <text class="rk" y="6.9" text-anchor="middle" font-size="2.6" fill="#ffd34d" stroke="#5a3b00" stroke-width=".3" paint-order="stroke"></text>
-        <text class="snow" x="2.9" y="-2.2" font-size="3.8">❄</text></g></g></g>`;
-    }));
     return h;
   }
+
+  /* ---- 3D tokens (HTML/CSS-3D layer above the SVG board) ---- */
+  const SNOW = `<svg class="snow" viewBox="-10 -10 20 20" aria-hidden="true"><g fill="none" stroke="#2f7fb2" stroke-width="1.5" stroke-linecap="round">${[0, 60, 120, 180, 240, 300].map((a) => `<g transform="rotate(${a})"><path d="M0 0V-8.6M0 -4.6L-2.4 -6.8M0 -4.6L2.4 -6.8"/></g>`).join('')}</g><circle r="1.5" fill="#e9f9ff" stroke="#2f7fb2" stroke-width=".8"/></svg>`;
+  const EDGE = Array.from({ length: 9 }, (_, k) => `<i style="--z:${(-0.72 + k * 0.18).toFixed(2)};--b:${(0.5 + k * 0.055).toFixed(2)}"></i>`).join('');
+  function tokensHTML(players) {
+    return players.map((pl, pi) => pl.tokens.map((t, ti) => `<div class="tok" id="tok-${pi}-${ti}" data-pi="${pi}" data-ti="${ti}" style="--c:${HEX[pl.color]};--base:${HEX[pl.color]};--hi:${LIGHT[pl.color]};--lo:${DARKC[pl.color]}">
+      <div class="sc"><div class="shadow"></div><div class="glow"></div><div class="halo"></div>
+        <div class="stage"><div class="tilt"><div class="hop"><div class="flip"><div class="edge">${EDGE}</div>
+          <div class="face fFront"><span class="rk"></span><b>${ti + 1}</b></div>
+          <div class="face fBack">${SNOW}<b>${ti + 1}</b></div>
+        </div></div></div></div>
+        <div class="hit"></div></div></div>`).join('')).join('');
+  }
+  function fitBoard() {
+    const w = $('#boardWrap').clientWidth;
+    if (w) $('#boardWrap').style.setProperty('--u', (w / 118) + 'px');
+  }
+  if (window.ResizeObserver) new ResizeObserver(fitBoard).observe($('#boardWrap')); else window.addEventListener('resize', fitBoard);
 
   /* ---- token layout ---- */
   function layout() {
     const s = app.session.state, groups = {};
     s.players.forEach((pl, pi) => pl.tokens.forEach((t, ti) => {
       const v = app.view[pi + '-' + ti];
-      if (v.p >= 0 && v.p < E.RING) { const k = E.tileOf(pl, v.p); (groups[k] = groups[k] || []).push(pi + '-' + ti); }
+      if (v.p >= 0 && v.p < E.GOAL) { const k = E.tileOf(pl, v.p); (groups[k] = groups[k] || []).push(pi + '-' + ti); }
     }));
     s.players.forEach((pl, pi) => pl.tokens.forEach((t, ti) => {
       const key = pi + '-' + ti, v = app.view[key], n = cIdx(pl.color);
       let x, y, sc = 1;
       if (v.p < 0) [x, y] = yardXY(pl.color, ti);
       else if (v.p >= E.GOAL) { [x, y] = doneXY(n, ti); sc = .62; }
-      else if (v.p >= E.RING) [x, y] = laneXY(n, v.p - E.RING);
       else {
         const k = E.tileOf(pl, v.p), g = groups[k], idx = g.indexOf(key);
         [x, y] = tileCenter(k);
@@ -1012,12 +1187,18 @@ const RankcoAI = (() => {
         else if (g.length > 2) { x += (idx % 2 ? 1 : -1) * 2.1; y += (idx < 2 ? -1 : 1) * 1.7; sc = .66; }
       }
       const el = $('#tok-' + key);
-      el.style.transform = `translate(${x}px,${y}px)`;
-      $('.sc', el).setAttribute('transform', `scale(${sc})`);
+      el.style.setProperty('--x', x); el.style.setProperty('--y', y); el.style.setProperty('--s', sc);
+      const fz = v.frozen ? '1' : '0';
+      if (el.dataset.fz !== undefined && el.dataset.fz !== fz) {       // freeze / unfreeze → hop + flip
+        el.classList.remove('flipF', 'flipU'); void el.offsetWidth;
+        el.classList.add(v.frozen ? 'flipF' : 'flipU');
+        clearTimeout(el._ft); el._ft = setTimeout(() => el.classList.remove('flipF', 'flipU'), 1200);
+      }
+      el.dataset.fz = fz;
       el.classList.toggle('frozen', !!v.frozen);
       const lv = v.p >= 0 && v.p < E.GOAL ? E.levelOf(v.p) : 0;
       $('.rk', el).textContent = '★'.repeat(lv);
-      el.style.zIndex = v.p;
+      el.style.zIndex = 5 + Math.max(0, v.p);
     }));
   }
   function syncView() {
@@ -1027,7 +1208,10 @@ const RankcoAI = (() => {
   function renderCoins() {
     const s = app.session.state;
     let pot = 0;
-    s.players.forEach((pl, pi) => { pot += pl.spent; [0, 1].forEach((i) => { const c = $('#cs-' + pi + '-' + i); c.setAttribute('fill', i < pl.coins ? '#f6b21b' : 'none'); c.setAttribute('stroke', i < pl.coins ? '#6b4600' : 'rgba(255,255,255,.55)'); c.setAttribute('stroke-dasharray', i < pl.coins ? '' : '.8 .7'); }); });
+    s.players.forEach((pl, pi) => { pot += pl.spent; [0, 1].forEach((i) => {
+      const c = $('#cs-' + pi + '-' + i), on = i < pl.coins;
+      $('.cu', c).style.display = on ? '' : 'none'; $('.slot', c).style.display = on ? 'none' : '';
+    }); });
     $('#potN').textContent = pot;
   }
 
@@ -1040,7 +1224,8 @@ const RankcoAI = (() => {
     app.session = { cfg, state: E.createGame(cfg) };
     app.log = []; app.busy = false; app.loop++;
     $('#board').innerHTML = boardSVG(app.session.state.players);
-    $$('.tok', $('#board')).forEach((el) => el.addEventListener('click', onTokenClick));
+    $('#tokens').innerHTML = tokensHTML(app.session.state.players); fitBoard();
+    $$('.tok', $('#tokens')).forEach((el) => el.addEventListener('click', onTokenClick));
     $('#log').innerHTML = '';
     syncView(); layout(); renderCoins(); renderAll(); renderDie(app.session.state.lastRoll || 0, true);
     go('game');
@@ -1086,10 +1271,10 @@ const RankcoAI = (() => {
       const toks = pl.tokens.map((t, ti) => {
         if (t.p === E.GOAL) return `<span class="tk d">T${ti + 1} ✔ Centre</span>`;
         if (t.p < 0) return `<span class="tk">T${ti + 1} Waiting</span>`;
-        return `<span class="tk${t.frozen ? ' f' : ''}">T${ti + 1} ${'★'.repeat(E.levelOf(t.p))}${t.frozen ? ' ❄' : ''}</span>`;
+        return `<span class="tk${t.frozen ? ' f' : ''}">T${ti + 1} ${'★'.repeat(E.levelOf(t.p))} Round ${E.levelOf(t.p)}/${E.LAYERS}${t.frozen ? ' ❄' : ''}</span>`;
       }).join('');
       return `<div class="pl${pi === s.turn && s.phase !== 'over' ? ' me' : ''}" style="--c:${HEX[pl.color]}"><b>${esc(pl.name)}</b>
-        <div class="coins" title="Recovery coins">${[0, 1].map((i) => `<span class="coin${i < pl.coins ? '' : ' off'}"></span>`).join('')}</div>
+        <div class="coins" title="Recovery coins">${[0, 1].map((i) => i < pl.coins ? '<svg class="rc" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg>' : '<span class="rc off"></span>').join('')}</div>
         <span class="ty">${CNAME[pl.color]} · ${pl.type === 'ai' ? DIFF[pl.difficulty] + ' AI' : 'Human'}</span><div class="toks">${toks}</div></div>`;
     }).join('');
   }
@@ -1098,15 +1283,15 @@ const RankcoAI = (() => {
     const P = s.players[s.phase === 'setback' ? s.awaiting : s.turn], t = o.token !== undefined ? P.tokens[o.token] : null, v = s.roll;
     const T = t ? `Token ${t.id + 1}` : '';
     switch (o.type) {
-      case 'move': { const to = Math.min(t.p + v, E.GOAL), up = to < E.GOAL && E.levelOf(to) > E.levelOf(t.p); return { i: '➜', a: `Promote ${T} by ${v}`, b: to >= E.GOAL ? 'Reaches the centre!' : `${'★'.repeat(E.levelOf(t.p))} → ${'★'.repeat(E.levelOf(to))}${up ? ' · level up' : ''}`, cls: 'good' }; }
+      case 'move': { const to = Math.min(t.p + v, E.GOAL), up = to < E.GOAL && E.levelOf(to) > E.levelOf(t.p); return { i: '➜', a: `Promote ${T} by ${v}`, b: to >= E.GOAL ? 'Reaches the centre!' : `${'★'.repeat(E.levelOf(t.p))} → ${'★'.repeat(E.levelOf(to))}${up ? ' · next round' : ''}`, cls: 'good' }; }
       case 'enter': return { i: '⭐', a: `Bring ${T} into play`, b: 'Rolled a 6', cls: 'good' };
-      case 'enter_pay': return { i: '🪙', a: `Spend 1 coin: bring ${T} into play`, b: 'Skips this roll', cls: 'paid' };
+      case 'enter_pay': return { i: COIN, a: `Spend 1 coin: bring ${T} into play`, b: 'Skips this roll', cls: 'paid' };
       case 'unfreeze': return { i: '🔥', a: `Unfreeze ${T}`, b: 'Rolled a 6', cls: 'good' };
-      case 'unfreeze_pay': return { i: '🪙', a: `Spend 1 coin: unfreeze ${T}`, b: s.phase === 'roll' ? 'Then roll as normal' : 'Skips this roll', cls: 'paid' };
+      case 'unfreeze_pay': return { i: COIN, a: `Spend 1 coin: unfreeze ${T}`, b: s.phase === 'roll' ? 'Then roll as normal' : 'Skips this roll', cls: 'paid' };
       case 'freeze': return { i: '❄', a: `Freeze ${T}`, b: `Rolled a 1 at ${'★'.repeat(E.levelOf(t.p))}`, cls: 'danger' };
-      case 'recover': return { i: '🪙', a: 'Reclaim a spent coin', b: 'Use your bonus roll to take one back from the pot', cls: 'good' };
+      case 'recover': return { i: COIN, a: 'Reclaim a spent coin', b: 'Use your bonus roll to take one back from the pot', cls: 'good' };
       case 'pass': return { i: '⏭', a: 'Skip this roll', b: 'Keep your coins', cls: '' };
-      case 'setback_pay': return { i: '🪙', a: 'Pay 1 coin – hold your tile', b: `${T} stays where it is`, cls: 'paid' };
+      case 'setback_pay': return { i: COIN, a: 'Pay 1 coin – hold your tile', b: `${T} stays where it is`, cls: 'paid' };
       case 'setback_accept': return { i: '⏪', a: 'Accept the setback', b: `${T} goes back 6 tiles`, cls: 'danger' };
     }
     return { i: '•', a: o.type, b: '', cls: '' };
@@ -1179,10 +1364,13 @@ const RankcoAI = (() => {
         case 'roll': await rollDie(e.value); pushLog(`${name(e.pi)} rolled a <b>${e.value}</b>${e.bonus ? ' (bonus)' : ''}`); await sleep(280); break;
         case 'enter': app.view[key].p = 0; layout(); pushLog(`${name(e.pi)} brought Token ${e.ti + 1} into play${e.paid ? ' (1 coin)' : ''}`); await sleep(450); break;
         case 'move': {
-          for (const p of e.path) { app.view[key].p = p; layout(); await sleep(e.path.length > 3 ? 120 : 160); }
+          for (const p of e.path) {
+            app.view[key].p = p; layout();
+            if (p > 0 && E.isHome(p)) flash('★'.repeat(E.levelOf(p)) + ' ROUND ' + E.levelOf(p), col);
+            await sleep(e.path.length > 3 ? 120 : 160);
+          }
           const up = E.levelOf(e.to) > E.levelOf(e.from) && e.to < E.GOAL;
-          pushLog(`${name(e.pi)} promoted Token ${e.ti + 1} by ${e.steps}${up ? ` → <b>${'★'.repeat(E.levelOf(e.to))}</b>` : ''}`);
-          if (up) flash('★'.repeat(E.levelOf(e.to)) + ' PROMOTED', col);
+          pushLog(`${name(e.pi)} promoted Token ${e.ti + 1} by ${e.steps}${up ? ` → <b>${'★'.repeat(E.levelOf(e.to))}</b> (round ${E.levelOf(e.to)})` : ''}`);
           await sleep(200); break;
         }
         case 'salute': pushLog(`🫡 ${name(e.owner)} salutes ${name(e.pi)} – <b>+3 bonus moves</b>`); flash('🫡 Salute! +3', col); await sleep(950); break;
@@ -1191,11 +1379,11 @@ const RankcoAI = (() => {
           for (const p of e.path.slice(1)) { app.view[key].p = p; layout(); await sleep(430); }
           pushLog(`⏪ ${name(e.pi)}'s Token ${e.ti + 1} ${e.to < 0 ? 'sent back off the board' : 'pushed back ' + (e.from - e.to) + ' tiles'} by ${name(e.by)}`); await sleep(250); break;
         }
-        case 'hold': flash('HELD!', col); pushLog(`🪙 ${name(e.pi)} paid a coin – Token ${e.ti + 1} holds its tile`); await sleep(700); break;
+        case 'hold': flash('HELD!', col); pushLog(`${COINI} ${name(e.pi)} paid a coin – Token ${e.ti + 1} holds its tile`); await sleep(700); break;
         case 'coin': renderCoinsLive(e.pi); await sleep(250); break;
-        case 'freeze': app.view[key].frozen = true; layout(); flash('❄ FROZEN', '#8fd3ff'); pushLog(`❄ ${name(e.pi)}'s Token ${e.ti + 1} is frozen`); await sleep(750); break;
-        case 'unfreeze': app.view[key].frozen = false; layout(); flash('UNFROZEN', '#6ff0a0'); pushLog(`🔥 ${name(e.pi)} unfroze Token ${e.ti + 1}${e.paid ? ' (1 coin)' : ''}`); await sleep(650); break;
-        case 'recover': pushLog(`🪙 ${name(e.pi)} reclaimed a coin from the pot`); await sleep(500); break;
+        case 'freeze': app.view[key].frozen = true; layout(); flash('❄ FROZEN', '#8fd3ff'); pushLog(`❄ ${name(e.pi)}'s Token ${e.ti + 1} is frozen`); await sleep(1150); break;
+        case 'unfreeze': app.view[key].frozen = false; layout(); flash('UNFROZEN', '#6ff0a0'); pushLog(`🔥 ${name(e.pi)} unfroze Token ${e.ti + 1}${e.paid ? ' (1 coin)' : ''}`); await sleep(1050); break;
+        case 'recover': pushLog(`${COINI} ${name(e.pi)} reclaimed a coin from the pot`); await sleep(500); break;
         case 'pass': pushLog(`${name(e.pi)} could not move`); await sleep(350); break;
         case 'finish': app.view[key].p = E.GOAL; layout(); flash('🏅 REACHED THE CENTRE', col); pushLog(`🏅 ${name(e.pi)}'s Token ${e.ti + 1} reached the centre!`); await sleep(1000); break;
         case 'bonus': flash('🎲 BONUS ROLL', col); await sleep(500); break;
@@ -1215,13 +1403,13 @@ const RankcoAI = (() => {
   $('#gBack').onclick = () => modal('<h3>Leave this game?</h3><p>The current match will be lost. Your player setup is kept so you can start again.</p>',
     [{ label: 'Keep playing', dark: true }, { label: 'Leave game', fn: () => { app.loop++; app.busy = false; renderSetup(); go('setup'); } }]);
   $('#gRules').onclick = () => modal(`<h3>RANKCO rules</h3><ul>
-    <li><b>Goal:</b> be first to bring <b>both</b> tokens round the board to the centre.</li>
+    <li><b>Goal:</b> be first to bring <b>both</b> tokens through <b>4 rounds</b> – one on each layer of the board – and into the centre.</li>
     <li><b>Enter:</b> roll a 6 to bring a token in – or spend 1 coin if you miss.</li>
-    <li><b>Move:</b> roll and promote a token clockwise. Each side of the board is one star level (★ → ★★★★). Your own tokens can’t skip each other. After a full lap, follow your colour’s arrows in to the centre – the arrow lane is safe from setbacks.</li>
+    <li><b>Move:</b> roll and promote a token clockwise. Each round is played on its own layer, working inwards: round 1 on the outer ring (★), round 2 on the next ring (★★), round 3 (★★★), round 4 on the inner ring (★★★★). Each round ends on an arrow in your colour – it leads you into the next layer’s home corner, and the last arrow leads into the centre. Your own tokens can’t skip each other.</li>
     <li><b>Setbacks:</b> land on an opponent and their token goes back 6 tiles (repeating if that tile is taken). They can pay 1 coin to stay put.</li>
     <li><b>Salutation tile:</b> land on another colour’s soldier tile for 3 bonus moves.</li>
     <li><b>Rolling a 6</b> earns a bonus roll. On a bonus roll you may instead reclaim a spent coin.</li>
-    <li><b>Freeze:</b> rolling a 1 with a token at ★★★ or ★★★★ freezes it. Frozen tokens can’t move or be set back. Unfreeze with a 6 or 1 coin. With a lower token in play you may promote that one instead.</li>
+    <li><b>Freeze:</b> rolling a 1 with a token in round 3 or 4 (★★★ / ★★★★) freezes it – the token flips over to show its ice face. Frozen tokens can’t move or be set back. Unfreeze with a 6 or 1 coin. With a lower token in play you may promote that one instead.</li>
     <li><b>Home corners</b> are safe from setbacks and freezing.</li></ul>`, [{ label: 'Got it' }]);
 
   /* ===================================================================
@@ -1253,6 +1441,20 @@ const RankcoAI = (() => {
 
   /* ---- boot ---- */
   buildOrbit();
+  (function buildSparks() {                                  // drifting gold sparks on page 2
+    let h = '';
+    for (let i = 0; i < 26; i++) {
+      const sz = 3 + Math.random() * 6;
+      h += `<i style="left:${(Math.random() * 100).toFixed(1)}%;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;--dx:${(Math.random() * 80 - 40).toFixed(0)}px;animation-duration:${(7 + Math.random() * 9).toFixed(1)}s;animation-delay:${(Math.random() * 9).toFixed(1)}s"></i>`;
+    }
+    $('#sparks').innerHTML = h;
+  })();
+  /* landing page: after 3 seconds it leaves by itself and page 2 (the board behind the title) appears */
+  setTimeout(() => {
+    if (app.screen !== 'splash') return;
+    $('#bgBoard').innerHTML = boardSVG([]);                  // the real board artwork, no tokens
+    go('welcome');
+  }, 3000);
   window.RANKCO = { E, AI, app };   // handy for future online adapters / debugging
 })();
 
