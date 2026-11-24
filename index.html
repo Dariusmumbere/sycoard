@@ -54,7 +54,7 @@ input{font:inherit}
 .orbit rect{opacity:.22;animation:chase 4.8s ease-in-out infinite}
 @keyframes chase{0%,100%{opacity:.16}8%{opacity:1}22%{opacity:.3}}
 @keyframes spin{to{transform:rotate(360deg)}}
-.welcome-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;gap:26px}
+.welcome-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,3vh,26px)}
 .emblem{width:clamp(84px,18vw,118px);animation:rise 1s .05s cubic-bezier(.2,.9,.2,1) both,float 5s 1.2s ease-in-out infinite}
 .logo-img{display:block;width:clamp(220px,62vw,520px);max-height:46vh;height:auto;object-fit:contain;
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.55)) drop-shadow(0 0 22px rgba(124,92,255,.35));
@@ -90,19 +90,21 @@ input{font:inherit}
 @keyframes shimmer{to{background-position:-250% 0}}
 
 /* ---------- SCREEN 1 : RANKCO GAME over the board ---------- */
-.bgboard{position:absolute;inset:0;display:grid;place-items:center;perspective:1500px;overflow:hidden;pointer-events:none}
-.bgb-tilt{width:min(160vw,150vh,1150px);opacity:.55;filter:saturate(1.2) brightness(.85) drop-shadow(0 40px 60px rgba(0,0,0,.7));
-  transform:rotateX(54deg) rotateZ(-30deg);animation:bgDrift 26s ease-in-out infinite alternate}
+.bgboard{position:absolute;inset:0;padding-bottom:var(--lift,7%);display:grid;place-items:center;perspective:1700px;overflow:hidden;pointer-events:none}
+.bgb-tilt{--W:min(64vw,82vh,900px);--u:calc(var(--W) / 118);--rx:52deg;--rz:-30deg;position:relative;width:var(--W);transform-style:preserve-3d;
+  transform:rotateX(var(--rx)) rotateZ(var(--rz));animation:bgDrift 26s ease-in-out infinite alternate}
+.bgb-tilt>svg{opacity:.7;filter:saturate(1.2) brightness(.92) drop-shadow(0 40px 60px rgba(0,0,0,.7))}
+@media (max-aspect-ratio:4/5){.bgb-tilt{--W:min(78vw,60vh,880px);--rx:44deg;--rz:-10deg}.bgboard{padding-bottom:40%}#s-welcome .welcome-center{transform:translateY(13vh)}}
 .bgb-tilt svg{display:block;width:100%;height:auto}
-@keyframes bgDrift{from{transform:rotateX(50deg) rotateZ(-34deg) translateY(-2%) scale(1)}to{transform:rotateX(58deg) rotateZ(-22deg) translateY(3%) scale(1.06)}}
-.bg-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(60% 46% at 50% 56%,rgba(6,7,12,.82),rgba(6,7,12,.45) 62%,transparent 100%),linear-gradient(180deg,rgba(6,7,12,.7),transparent 28%,transparent 70%,rgba(6,7,12,.8))}
+@keyframes bgDrift{from{transform:rotateX(calc(var(--rx) - 3deg)) rotateZ(calc(var(--rz) - 5deg)) translateY(-1%)}to{transform:rotateX(calc(var(--rx) + 3deg)) rotateZ(calc(var(--rz) + 6deg)) translateY(1%)}}
+.bg-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(46% 34% at 50% 58%,rgba(6,7,12,.7),rgba(6,7,12,.3) 62%,transparent 100%),linear-gradient(180deg,rgba(6,7,12,.55),transparent 22%,transparent 80%,rgba(6,7,12,.7))}
 #s-welcome .slogan{text-shadow:0 2px 12px rgba(0,0,0,.9),0 0 3px rgba(0,0,0,.8)}
 #s-welcome .orbit{opacity:.5;z-index:1}
 .sparks{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1}
 .sparks i{position:absolute;bottom:-14px;border-radius:50%;background:radial-gradient(circle,#fff6c4 0%,#f7c948 45%,transparent 70%);opacity:0;animation:spark linear infinite}
 @keyframes spark{0%{transform:translateY(0) scale(.6);opacity:0}15%{opacity:.9}100%{transform:translateY(-105vh) translateX(var(--dx,0px)) scale(1.2);opacity:0}}
 .title-rk{display:flex;flex-direction:column;align-items:center;gap:clamp(8px,2vw,16px);line-height:1;animation:rise 1s .1s cubic-bezier(.2,.9,.2,1) both}
-.title-rk .t1{display:block;font-family:'Orbitron','Montserrat',sans-serif;font-weight:900;font-style:italic;font-size:clamp(52px,15.5vw,138px);letter-spacing:.04em;transform:skewX(-6deg);
+.title-rk .t1{display:block;font-family:'Orbitron','Montserrat',sans-serif;font-weight:900;font-style:italic;font-size:clamp(46px,min(15.5vw,17vh),138px);letter-spacing:.04em;transform:skewX(-6deg);
   background:linear-gradient(100deg,#d9820f 0%,#fff3b8 18%,#f7c948 36%,#e08a12 54%,#fff3b8 72%,#d9820f 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(0 0 22px rgba(124,92,255,.9)) drop-shadow(0 5px 0 rgba(58,30,140,.85)) drop-shadow(0 14px 24px rgba(0,0,0,.6));animation:shimmer 6s linear infinite}
 .title-rk .t2{display:flex;align-items:center;gap:clamp(8px,2.4vw,18px)}
@@ -345,6 +347,49 @@ input{font:inherit}
 .conn.warn{background:#a86a00}
 .conn.show{transform:none}
 
+
+/* ---------- welcome board props: dice, tokens, coins ---------- */
+.bgprops{position:absolute;inset:0;transform-style:preserve-3d;pointer-events:none}
+.bp{position:absolute;width:0;height:0;transform-style:preserve-3d}
+.bp .bk{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d}
+.bp i{position:absolute;border-radius:50%;transform:translateZ(calc(var(--u) * var(--z,0)))}
+.bp .sh{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6) 55%,transparent 100%);transform:translateZ(calc(var(--u) * .06))}
+/* token */
+.bt .sh{left:calc(var(--u) * -4.4);top:calc(var(--u) * -4.1);width:calc(var(--u) * 9);height:calc(var(--u) * 9)}
+.bt i{left:calc(var(--u) * -3.7);top:calc(var(--u) * -3.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);background:color-mix(in srgb,var(--tc) var(--p),#000)}
+.bt .tp{position:absolute;left:calc(var(--u) * -3.7);top:calc(var(--u) * -3.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);border-radius:50%;display:grid;place-items:center;transform:translateZ(calc(var(--u) * 2.45));
+  background:radial-gradient(circle at 34% 28%,var(--hi) 0,var(--tc) 46%,var(--lo) 100%);
+  box-shadow:inset 0 0 0 calc(var(--u) * .2) rgba(255,255,255,.75),inset 0 0 0 calc(var(--u) * .52) var(--lo)}
+.bt .tp b{font-weight:900;font-size:calc(var(--u) * 3.5);line-height:1;color:#fff;text-shadow:0 calc(var(--u) * .14) 0 rgba(0,0,0,.5)}
+.bt .bk{animation:tokBob 3.4s ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
+@keyframes tokBob{from{transform:translateZ(0)}to{transform:translateZ(calc(var(--u) * 1.6))}}
+/* coin */
+.bc .sh{left:calc(var(--u) * -4);top:calc(var(--u) * -3.7);width:calc(var(--u) * 8);height:calc(var(--u) * 8)}
+.bc i{left:calc(var(--u) * -3.4);top:calc(var(--u) * -3.4);width:calc(var(--u) * 6.8);height:calc(var(--u) * 6.8);background:color-mix(in srgb,#d99a14 var(--p),#2b1a00)}
+.bc .cf{position:absolute;left:calc(var(--u) * -3.4);top:calc(var(--u) * -3.4);width:calc(var(--u) * 6.8);height:calc(var(--u) * 6.8);transform:translateZ(calc(var(--u) * 1.25))}
+.bc .cf svg{display:block;width:100%;height:100%}
+.bc .cf,.bc .cb{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.bc .cb{position:absolute;left:calc(var(--u) * -3.4);top:calc(var(--u) * -3.4);width:calc(var(--u) * 6.8);height:calc(var(--u) * 6.8);transform:rotateY(180deg)}
+.bc .cb svg{display:block;width:100%;height:100%}
+.bc .bk{animation:coinHop 7s ease-in-out infinite;animation-delay:var(--dl,0s)}
+@keyframes coinHop{0%,72%{transform:translateZ(0) rotateY(0)}79%{transform:translateZ(calc(var(--u) * 7)) rotateY(180deg)}86%,100%{transform:translateZ(0) rotateY(360deg)}}
+/* dice */
+.bd{--s:calc(var(--u) * 7.2);--h:calc(var(--s) / 2)}
+.bd .sh{left:calc(var(--s) * -.7);top:calc(var(--s) * -.62);width:calc(var(--s) * 1.4);height:calc(var(--s) * 1.4)}
+.bd .dh{position:absolute;left:0;top:0;width:0;height:0;transform-style:preserve-3d;transform:translateZ(var(--h));animation:dHop 9s ease-in-out infinite;animation-delay:var(--dl,0s)}
+.bd .cube{position:absolute;left:calc(var(--s) / -2);top:calc(var(--s) / -2);width:var(--s);height:var(--s);transform-style:preserve-3d;
+  transform:rotateZ(10deg) rotateX(0deg) rotateY(0deg);animation:dRoll 9s ease-in-out infinite;animation-delay:var(--dl,0s)}
+.bd .face{position:absolute;inset:0;border-radius:calc(var(--s) * .17);background:linear-gradient(145deg,#fff,#d6d3e8);display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);padding:calc(var(--s) * .15);
+  box-shadow:inset 0 0 calc(var(--s) * .1) rgba(80,60,150,.4)}
+.bd .face i{position:static;transform:none;border-radius:50%;margin:auto;width:calc(var(--s) * .19);height:calc(var(--s) * .19);background:transparent}
+.bd .face i.on{background:radial-gradient(circle at 35% 30%,#5b4a9a,#0c0820)}
+.bd .f1{transform:translateZ(var(--h))}.bd .f6{transform:rotateY(180deg) translateZ(var(--h))}
+.bd .f3{transform:rotateY(90deg) translateZ(var(--h))}.bd .f4{transform:rotateY(-90deg) translateZ(var(--h))}
+.bd .f2{transform:rotateX(90deg) translateZ(var(--h))}.bd .f5{transform:rotateX(-90deg) translateZ(var(--h))}
+@keyframes dHop{0%,18%{transform:translateZ(var(--h))}24%{transform:translateZ(calc(var(--h) + var(--u) * 12))}30%,48%{transform:translateZ(var(--h))}
+  54%{transform:translateZ(calc(var(--h) + var(--u) * 12))}60%,78%{transform:translateZ(var(--h))}84%{transform:translateZ(calc(var(--h) + var(--u) * 12))}90%,100%{transform:translateZ(var(--h))}}
+@keyframes dRoll{0%,18%{transform:rotateZ(10deg) rotateX(0deg) rotateY(0deg)}30%,48%{transform:rotateZ(-30deg) rotateX(270deg) rotateY(180deg)}
+  60%,78%{transform:rotateZ(25deg) rotateX(540deg) rotateY(360deg)}90%,100%{transform:rotateZ(10deg) rotateX(720deg) rotateY(450deg)}}
 </style>
 </head>
 <body>
@@ -412,7 +457,7 @@ input{font:inherit}
 
   <!-- SCREEN 1 : RANKCO GAME – the board in the background, slogan, Play -->
   <section id="s-welcome" class="screen" aria-label="RANKCO game">
-    <div class="bgboard" aria-hidden="true"><div class="bgb-tilt"><svg id="bgBoard" viewBox="-9 -21 118 144"></svg></div></div>
+    <div class="bgboard" aria-hidden="true"><div class="bgb-tilt"><svg id="bgBoard" viewBox="-9 -21 118 144"></svg><div class="bgprops" id="bgProps"></div></div></div>
     <div class="orbit" id="orbit" aria-hidden="true"></div>
     <div class="bg-veil" aria-hidden="true"></div>
     <div class="sparks" id="sparks" aria-hidden="true"></div>
@@ -1761,6 +1806,42 @@ const RankcoAI = (() => {
     };
   })();
 
+  /* ---- welcome-screen decoration: waiting trays, tokens, coins and two dice lying on the tilted board ---- */
+  function trayDecor() {
+    return E.COLORS.map((c) => {
+      const [tx, ty] = TRAY[c];
+      let s = `<rect x="${tx}" y="${ty}" width="${TRAY_W}" height="${TRAY_H}" rx="5" fill="rgba(6,6,12,.55)" stroke="${HEX[c]}" stroke-width=".7"/>`;
+      [0, 1].forEach((i) => {
+        const [yx, yy] = yardXY(c, i), [cx, cy] = coinXY(c, i);
+        s += `<circle cx="${yx}" cy="${yy}" r="4.3" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>` +
+             `<circle cx="${cx}" cy="${cy}" r="3.4" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.55)" stroke-width=".4" stroke-dasharray=".9 .8"/>`;
+      });
+      return s;
+    }).join('');
+  }
+  function bgPropsHTML() {
+    const at = (x, y) => `left:${((x + 9) / 118 * 100).toFixed(3)}%;top:${((y + 21) / 144 * 100).toFixed(3)}%`;
+    const token = (color, xy, n, dl) => `<div class="bp bt" style="${at(xy[0], xy[1])};--tc:${HEX[color]};--hi:${LIGHT[color]};--lo:${DARKC[color]};--dl:${dl}s"><div class="sh"></div><div class="bk">` +
+      Array.from({ length: 6 }, (_, k) => `<i style="--z:${(k * .4).toFixed(2)};--p:${38 + k * 9}%"></i>`).join('') + `<div class="tp"><b>${n}</b></div></div></div>`;
+    const coin = (xy, dl) => `<div class="bp bc" style="${at(xy[0], xy[1])};--dl:${dl}s"><div class="sh"></div><div class="bk">` +
+      Array.from({ length: 4 }, (_, k) => `<i style="--z:${(k * .3).toFixed(2)};--p:${45 + k * 16}%"></i>`).join('') +
+      `<div class="cf"><svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg></div><div class="cb"><svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg></div></div></div>`;
+    const PAT = { 1: [4], 2: [0, 8], 3: [0, 4, 8], 4: [0, 2, 6, 8], 5: [0, 2, 4, 6, 8], 6: [0, 2, 3, 5, 6, 8] };
+    const face = (n) => `<div class="face f${n}">${Array.from({ length: 9 }, (_, i) => `<i class="${PAT[n].includes(i) ? 'on' : ''}"></i>`).join('')}</div>`;
+    const die = (x, y, dl) => `<div class="bp bd" style="${at(x, y)};--dl:${dl}s"><div class="sh"></div><div class="dh"><div class="cube">${[1, 2, 3, 4, 5, 6].map(face).join('')}</div></div></div>`;
+    let out = '';
+    E.COLORS.forEach((c, ci) => {
+      out += token(c, yardXY(c, 1), 2, -ci * .8);                       // second token still waiting in its tray
+      [0, 1].forEach((i) => { out += coin(coinXY(c, i), -(ci * 1.7 + i * .9)); });   // the two recovery coins
+    });
+    [[E.START_INDEX.blue + 3, 'blue'], [E.START_INDEX.red + 3, 'red'], [E.START_INDEX.green + 3, 'green'], [E.START_INDEX.orange + 3, 'orange']].forEach(([k, c], i) => {
+      const [col, row] = ringXY(k); out += token(c, cellXY(col, row), 1, -i * .7);        // first token of each colour out on the board
+    });
+    [0, 1, 2].forEach((k) => { out += coin(potXY(k), -k * 1.4 - .5); });                 // coins in the pot at the centre
+    out += die(16, 16, 0) + die(78, 72, -4.5);
+    return out;
+  }
+
   /* ---- boot ---- */
   buildOrbit();
   (function buildSparks() {                                  // drifting gold sparks on page 2
@@ -1774,7 +1855,8 @@ const RankcoAI = (() => {
   /* landing page: after 3 seconds it leaves by itself and page 2 (the board behind the title) appears */
   setTimeout(() => {
     if (app.screen !== 'splash') return;
-    $('#bgBoard').innerHTML = boardSVG([]);                  // the real board artwork, no tokens
+    $('#bgBoard').innerHTML = boardSVG([]) + trayDecor();    // the real board artwork + waiting trays
+    $('#bgProps').innerHTML = bgPropsHTML();
     let room = '';
     try { room = (new URLSearchParams(location.search).get('room') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 5); } catch (e) {}
     if (room) { app.mode = 'online'; ol.code = room; renderOnline(); go('online'); } else go('welcome');
