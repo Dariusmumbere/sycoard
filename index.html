@@ -221,8 +221,9 @@ input{font:inherit}
 .tok .fBack{transform:rotateY(180deg) translateZ(calc(var(--u,5px) * .76));overflow:hidden;
   background:radial-gradient(circle at 34% 28%,#fff 0,#d7f1ff 30%,#86cdf0 68%,#3f8cc0 100%);
   box-shadow:inset 0 0 0 calc(var(--u,5px) * .2) #fff,inset 0 0 0 calc(var(--u,5px) * .52) #5fb0dc,inset 0 0 calc(var(--u,5px) * .9) rgba(30,100,160,.45)}
-.tok .fBack .snow{width:calc(var(--u,5px) * 4.7);height:calc(var(--u,5px) * 4.7);margin-top:calc(var(--u,5px) * -.5);filter:drop-shadow(0 0 calc(var(--u,5px) * .35) #fff)}
-.tok .fBack b{position:absolute;bottom:calc(var(--u,5px) * .85);left:0;right:0;text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.5);line-height:1;color:#1f5f8a}
+.tok .fBack .snow{position:absolute;left:calc(50% - var(--u,5px) * 1.65);top:calc(50% - var(--u,5px) * 3.35);width:calc(var(--u,5px) * 3.3);height:calc(var(--u,5px) * 3.3);filter:drop-shadow(0 0 calc(var(--u,5px) * .35) #fff)}
+.tok .fBack .fz{position:absolute;left:0;right:0;bottom:calc(var(--u,5px) * 1.85);text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.12);letter-spacing:.03em;line-height:1;color:#0c4571;text-shadow:0 0 calc(var(--u,5px) * .3) #fff,0 0 calc(var(--u,5px) * .15) #fff}
+.tok .fBack b{position:absolute;bottom:calc(var(--u,5px) * .7);left:0;right:0;text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.15);line-height:1;color:#1f5f8a}
 .tok .fBack::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,.8) 50%,transparent 64%);background-size:260% 100%;animation:glint 2.8s linear infinite}
 @keyframes glint{from{background-position:130% 0}to{background-position:-130% 0}}
 .tok .hit{width:calc(var(--d) * 1.15);height:calc(var(--d) * 1.15);left:calc(var(--d) * -.575);top:calc(var(--d) * -.575);pointer-events:auto;cursor:default}
@@ -348,7 +349,7 @@ input{font:inherit}
 </head>
 <body>
 <!-- ONLINE PLAY: paste your Render backend URL here (no trailing slash). You can also open the page with ?api=https://... once. -->
-<script>window.RANKCO_API_URL = 'https://rankco.onrender.com';</script>
+<script>window.RANKCO_API_URL = 'https://YOUR-RANKCO-API.onrender.com';</script>
 <!-- RANKCO recovery coin (shared by the board trays, player cards, buttons and log) -->
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
   <defs>
@@ -657,11 +658,11 @@ const RankcoEngine = (() => {
     });
     let salute = false;
     const ownerColor = SALUTE_OWNER[tile];
-    if (allowSalute && ownerColor && ownerColor !== pl.color) {
+    if (allowSalute && ownerColor && ownerColor !== pl.color) {   // any other colour's soldier tile counts, even if nobody plays that colour
       const oi = s.players.findIndex((p) => p.color === ownerColor);
-      if (oi >= 0 && canMove(pl, tok, 3)) {
+      if (canMove(pl, tok, 3)) {
         salute = true; pl.stats.salutes++;
-        events.push({ t: 'salute', pi, ti, owner: oi, tile });
+        events.push({ t: 'salute', pi, ti, owner: oi, ownerColor, tile });
       }
     }
     s.pending = { pi, ti, victims, salute, decided: false };
@@ -1105,6 +1106,8 @@ const RankcoAI = (() => {
   // waiting tokens and coins sit in a small tray outside the leather frame, next to the player's own home corner
   const TRAY = { blue: [-7, -19], red: [61, -19], green: [61, 112], orange: [-7, 112] }, TRAY_W = 46, TRAY_H = 10;
   const yardXY = (color, ti) => [TRAY[color][0] + 6.5 + ti * 10, TRAY[color][1] + 5];
+  const POT_ORDER = [0, 4, 2, 6, 1, 5, 3, 7];                    // first four coins sit N / S / E / W of the centre
+  const potXY = (k) => { const a = (-90 + POT_ORDER[k % 8] * 45) * Math.PI / 180; return [50 + 5 * Math.cos(a), 50 + 5 * Math.sin(a)]; };
   const coinXY = (color, i) => [TRAY[color][0] + 31.4 + i * 7.8, TRAY[color][1] + 5];
   const star = (r, ri, n = 5) => Array.from({ length: n * 2 }, (_, i) => { const a = -Math.PI / 2 + (i * Math.PI) / n, rr = i % 2 ? ri : r; return (Math.cos(a) * rr).toFixed(2) + ',' + (Math.sin(a) * rr).toFixed(2); }).join(' ');
 
@@ -1166,6 +1169,9 @@ const RankcoAI = (() => {
     // centre: the RANKCO logo
     h += `<rect x="40.5" y="40.5" width="19" height="19" rx="2.6" fill="#fff" stroke="#111" stroke-width=".9"/>`;
     h += window.LOGO_OK === false ? CENTRE_FALLBACK : `<image href="logo.png" x="44" y="44" width="12" height="12" preserveAspectRatio="xMidYMid meet"/>`;
+    // the pot: spent coins pile up in the middle of the board
+    if (players.length) h += '<g id="potg">' + Array.from({ length: 8 }, (_, k) => { const [x, y] = potXY(k);
+      return `<g id="pot-${k}" style="display:none" transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><circle r="2.3" cx=".25" cy=".45" fill="rgba(0,0,0,.5)"/><use href="#rcoin" transform="scale(.044)"/></g>`; }).join('') + '</g>';
     // trays: waiting spots + the two recovery coins (3D tokens live in the HTML layer above the board)
     players.forEach((pl, pi) => {
       const [tx, ty] = TRAY[pl.color];
@@ -1188,7 +1194,7 @@ const RankcoAI = (() => {
       <div class="sc"><div class="shadow"></div><div class="glow"></div><div class="halo"></div>
         <div class="stage"><div class="tilt"><div class="hop"><div class="flip"><div class="edge">${EDGE}</div>
           <div class="face fFront"><span class="rk"></span><b>${ti + 1}</b></div>
-          <div class="face fBack">${SNOW}<b>${ti + 1}</b></div>
+          <div class="face fBack">${SNOW}<span class="fz">FROZEN</span><b>${ti + 1}</b></div>
         </div></div></div></div>
         <div class="hit"></div></div></div>`).join('')).join('');
   }
@@ -1243,6 +1249,7 @@ const RankcoAI = (() => {
       $('.cu', c).style.display = on ? '' : 'none'; $('.slot', c).style.display = on ? 'none' : '';
     }); });
     $('#potN').textContent = pot;
+    for (let k = 0; k < 8; k++) { const el = $('#pot-' + k); if (el) el.style.display = k < pot ? '' : 'none'; }
   }
 
   /* ===================================================================
@@ -1305,7 +1312,7 @@ const RankcoAI = (() => {
       const toks = pl.tokens.map((t, ti) => {
         if (t.p === E.GOAL) return `<span class="tk d">T${ti + 1} ✔ Centre</span>`;
         if (t.p < 0) return `<span class="tk">T${ti + 1} Waiting</span>`;
-        return `<span class="tk${t.frozen ? ' f' : ''}">T${ti + 1} ${'★'.repeat(E.levelOf(t.p))} Round ${E.levelOf(t.p)}/${E.LAYERS}${t.frozen ? ' ❄' : ''}</span>`;
+        return `<span class="tk${t.frozen ? ' f' : ''}">T${ti + 1} ${'★'.repeat(E.levelOf(t.p))} Round ${E.levelOf(t.p)}/${E.LAYERS}${t.frozen ? ' ❄ FROZEN' : ''}</span>`;
       }).join('');
       return `<div class="pl${pi === s.turn && s.phase !== 'over' ? ' me' : ''}" style="--c:${HEX[pl.color]}"><b>${esc(pl.name)}${app.online && app.online.pid === pi ? ' (you)' : ''}</b>
         <div class="coins" title="Recovery coins">${[0, 1].map((i) => i < pl.coins ? '<svg class="rc" viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg>' : '<span class="rc off"></span>').join('')}</div>
@@ -1408,17 +1415,20 @@ const RankcoAI = (() => {
           pushLog(`${name(e.pi)} promoted Token ${e.ti + 1} by ${e.steps}${up ? ` → <b>${'★'.repeat(E.levelOf(e.to))}</b> (round ${E.levelOf(e.to)})` : ''}`);
           await sleep(200); break;
         }
-        case 'salute': pushLog(`🫡 ${name(e.owner)} salutes ${name(e.pi)} – <b>+3 bonus moves</b>`); flash('🫡 Salute! +3', col); await sleep(950); break;
+        case 'salute': {
+          const who = e.owner >= 0 ? name(e.owner) : `<span style="color:${LIGHT[e.ownerColor]}">${CNAME[e.ownerColor]}</span>`;
+          pushLog(`🫡 ${who} salutes ${name(e.pi)} – <b>+3 bonus moves</b>`); flash('🫡 Salute! +3', col); await sleep(950); break;
+        }
         case 'setback': {
           flash('SETBACK!', col); await sleep(380);
           for (const p of e.path.slice(1)) { app.view[key].p = p; layout(); await sleep(430); }
           pushLog(`⏪ ${name(e.pi)}'s Token ${e.ti + 1} ${e.to < 0 ? 'sent back off the board' : 'pushed back ' + (e.from - e.to) + ' tiles'} by ${name(e.by)}`); await sleep(250); break;
         }
         case 'hold': flash('HELD!', col); pushLog(`${COINI} ${name(e.pi)} paid a coin – Token ${e.ti + 1} holds its tile`); await sleep(700); break;
-        case 'coin': renderCoinsLive(e.pi); await sleep(250); break;
+        case 'coin': await coinToCentre(e.pi); await sleep(120); break;
         case 'freeze': app.view[key].frozen = true; layout(); flash('❄ FROZEN', '#8fd3ff'); pushLog(`❄ ${name(e.pi)}'s Token ${e.ti + 1} is frozen`); await sleep(1150); break;
         case 'unfreeze': app.view[key].frozen = false; layout(); flash('UNFROZEN', '#6ff0a0'); pushLog(`🔥 ${name(e.pi)} unfroze Token ${e.ti + 1}${e.paid ? ' (1 coin)' : ''}`); await sleep(1050); break;
-        case 'recover': pushLog(`${COINI} ${name(e.pi)} reclaimed a coin from the pot`); await sleep(500); break;
+        case 'recover': pushLog(`${COINI} ${name(e.pi)} reclaimed a coin from the pot`); await coinFromCentre(e.pi); await sleep(200); break;
         case 'pass': pushLog(`${name(e.pi)} could not move`); await sleep(350); break;
         case 'finish': app.view[key].p = E.GOAL; layout(); flash('🏅 REACHED THE CENTRE', col); pushLog(`🏅 ${name(e.pi)}'s Token ${e.ti + 1} reached the centre!`); await sleep(1000); break;
         case 'bonus': flash('🎲 BONUS ROLL', col); await sleep(500); break;
@@ -1427,6 +1437,38 @@ const RankcoAI = (() => {
     }
   }
   function renderCoinsLive(pi) { const s = app.session.state; renderCoins(); }
+  /* a coin flies between a player's tray and the pot in the centre (timer based, so it also runs in background tabs) */
+  const potCount = () => app.session.state.players.reduce((a, p) => a + p.spent, 0);
+  function flyCoin(a, b, s0, s1, ms) {
+    return new Promise((res) => {
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      g.innerHTML = '<circle r="3.6" cx=".4" cy=".7" fill="rgba(0,0,0,.35)"/><use href="#rcoin"/>';
+      $('#board').appendChild(g);
+      const t0 = performance.now();
+      (function step() {
+        const k = Math.min(1, (performance.now() - t0) / ms), e = k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2, lift = Math.sin(Math.PI * e);
+        const x = a[0] + (b[0] - a[0]) * e, y = a[1] + (b[1] - a[1]) * e - lift * 6, sc = (s0 + (s1 - s0) * e) * (1 + .6 * lift);
+        g.setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)}) scale(${sc.toFixed(4)})`);
+        if (k < 1) setTimeout(step, 16); else { g.remove(); res(); }
+      })();
+    });
+  }
+  async function coinToCentre(pi) {
+    const pl = app.session.state.players[pi], slot = pl.coins;       // state is already final: the spent coin was the next free slot
+    const c = $('#cs-' + pi + '-' + slot);
+    if (!c || slot > 1) { renderCoins(); return; }
+    $('.cu', c).style.display = 'none'; $('.slot', c).style.display = '';
+    await flyCoin(coinXY(pl.color, slot), potXY(Math.max(0, potCount() - 1)), .068, .044, 700);
+    renderCoins();
+  }
+  async function coinFromCentre(pi) {
+    const pl = app.session.state.players[pi], slot = pl.coins - 1, k = potCount();
+    const c = $('#cs-' + pi + '-' + slot);
+    if (!c || slot < 0) { renderCoins(); return; }
+    const pc = $('#pot-' + k); if (pc) pc.style.display = 'none';
+    await flyCoin(potXY(k), coinXY(pl.color, slot), .044, .068, 700);
+    renderCoins();
+  }
 
   /* ---- leaving / rules ---- */
   function modal(html, acts) {
@@ -1442,7 +1484,7 @@ const RankcoAI = (() => {
     <li><b>Enter:</b> roll a 6 to bring a token in – or spend 1 coin if you miss.</li>
     <li><b>Move:</b> roll and promote a token clockwise. Each round is played on its own layer, working inwards: round 1 on the outer ring (★), round 2 on the next ring (★★), round 3 (★★★), round 4 on the inner ring (★★★★). Each round ends on an arrow in your colour – it leads you into the next layer’s home corner, and the last arrow leads into the centre. Your own tokens can’t skip each other.</li>
     <li><b>Setbacks:</b> land on an opponent and their token goes back 6 tiles (repeating if that tile is taken). They can pay 1 coin to stay put.</li>
-    <li><b>Salutation tile:</b> land on another colour’s soldier tile for 3 bonus moves.</li>
+    <li><b>Salutation tile:</b> land on any soldier tile that isn’t your own colour’s (even if nobody is playing that colour) for 3 bonus moves.</li>
     <li><b>Rolling a 6</b> earns a bonus roll. On a bonus roll you may instead reclaim a spent coin.</li>
     <li><b>Freeze:</b> rolling a 1 with a token in round 3 or 4 (★★★ / ★★★★) freezes it – the token flips over to show its ice face. Frozen tokens can’t move or be set back. Unfreeze with a 6 or 1 coin. With a lower token in play you may promote that one instead.</li>
     <li><b>Home corners</b> are safe from setbacks and freezing.</li></ul>`, [{ label: 'Got it' }]);
