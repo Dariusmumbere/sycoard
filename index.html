@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>RANKCO – Strategy. Luck. Decision Making. Resource and Risk Management.</title>
+<title>RANKCO – Strategy. Luck. Decision Making. Risk Management.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Orbitron:wght@900&display=swap" rel="stylesheet">
@@ -194,14 +194,14 @@ input{font:inherit}
 
 /* ---- 3D tokens: real CSS-3D pieces (stacked rim + two faces) floating above the board ---- */
 .tokens{position:absolute;inset:0;pointer-events:none;isolation:isolate}
-.tok{--d:calc(var(--u,5px) * 7.4);--edge:var(--base);position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;
+.tok{--rad:18%;--d:calc(var(--u,5px) * 7.4);--edge:var(--base);position:absolute;left:0;top:0;width:0;height:0;pointer-events:none;
   transform:translate(calc((var(--x,0) + 9) * var(--u,5px)),calc((var(--y,0) + 21) * var(--u,5px)));
   transition:transform .16s cubic-bezier(.3,.9,.4,1)}
 .tok.frozen{--edge:#9fd9f2}
 .tok .sc{position:absolute;left:0;top:0;width:0;height:0;transform:scale(var(--s,1));transition:transform .2s}
-.tok .stage,.tok .shadow,.tok .glow,.tok .hit,.tok .halo{position:absolute;width:var(--d);height:var(--d);left:calc(var(--d) / -2);top:calc(var(--d) / -2);border-radius:50%}
-.tok .shadow{left:calc(var(--d) / -2 + var(--u,5px) * .5);top:calc(var(--d) / -2 + var(--u,5px) * 1.3);background:radial-gradient(closest-side,rgba(0,0,0,.62) 50%,rgba(0,0,0,0) 100%);transition:background .5s}
-.tok.frozen .shadow{background:radial-gradient(closest-side,rgba(40,110,170,.6) 50%,rgba(0,0,0,0) 100%)}
+.tok .stage,.tok .shadow,.tok .glow,.tok .hit,.tok .halo{position:absolute;width:var(--d);height:var(--d);left:calc(var(--d) / -2);top:calc(var(--d) / -2);border-radius:var(--rad)}
+.tok .shadow{left:calc(var(--d) / -2 + var(--u,5px) * .5);top:calc(var(--d) / -2 + var(--u,5px) * 1.3);background:rgba(0,0,0,.5);filter:blur(calc(var(--u,5px) * .7));transition:background .5s}
+.tok.frozen .shadow{background:rgba(40,110,170,.55)}
 .tok .glow{opacity:0;box-shadow:0 0 calc(var(--u,5px) * 2.6) calc(var(--u,5px) * .7) rgba(143,211,255,.95);transition:opacity .5s}
 .tok.frozen .glow{opacity:.85;animation:iceGlow 1.8s ease-in-out infinite alternate}
 @keyframes iceGlow{from{opacity:.45}to{opacity:.95}}
@@ -210,23 +210,23 @@ input{font:inherit}
 .tok .tilt{transform:rotateX(22deg)}
 .tok .flip{transform:rotateY(0deg)}
 .tok.frozen .flip{transform:rotateY(180deg)}
-.tok .edge i{position:absolute;inset:0;border-radius:50%;background-color:var(--edge);filter:brightness(var(--b,1));
+.tok .edge i{position:absolute;inset:0;border-radius:var(--rad);background-color:var(--edge);filter:brightness(var(--b,1));
   transform:translateZ(calc(var(--u,5px) * var(--z,0)));transition:background-color .6s}
-.tok .face{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-family:'Montserrat',system-ui,sans-serif}
-.tok .fFront{transform:translateZ(calc(var(--u,5px) * .76));
+.tok .face{position:absolute;inset:0;border-radius:var(--rad);display:grid;place-items:center;backface-visibility:hidden;-webkit-backface-visibility:hidden;font-family:'Montserrat',system-ui,sans-serif}
+.tok .fFront{transform:translateZ(calc(var(--u,5px) * .62));
   background:radial-gradient(circle at 34% 28%,var(--hi) 0,var(--c) 46%,var(--lo) 100%);
-  box-shadow:inset 0 0 0 calc(var(--u,5px) * .2) rgba(255,255,255,.75),inset 0 0 0 calc(var(--u,5px) * .52) var(--lo),inset 0 calc(var(--u,5px) * -.35) calc(var(--u,5px) * .7) calc(var(--u,5px) * .35) rgba(0,0,0,.3)}
+  box-shadow:inset 0 0 0 calc(var(--u,5px) * .18) rgba(255,255,255,.5),inset 0 calc(var(--u,5px) * -.35) calc(var(--u,5px) * .7) calc(var(--u,5px) * .35) rgba(0,0,0,.3)}
 .tok .fFront::before{content:"";position:absolute;left:15%;top:8%;width:46%;height:28%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,0));transform:rotate(-22deg)}
 .tok .fFront b{position:relative;top:calc(var(--u,5px) * .45);font-weight:900;font-size:calc(var(--u,5px) * 3.5);line-height:1;color:#fff;
   text-shadow:0 calc(var(--u,5px) * .14) 0 rgba(0,0,0,.5),0 0 calc(var(--u,5px) * .5) rgba(0,0,0,.25)}
 .tok .rk{position:absolute;top:calc(var(--u,5px) * .72);left:0;right:0;text-align:center;font-size:calc(var(--u,5px) * 1.2);line-height:1;letter-spacing:calc(var(--u,5px) * .02);color:#ffd34d;text-shadow:0 0 calc(var(--u,5px) * .25) #5a3b00,0 calc(var(--u,5px) * .08) 0 #5a3b00;white-space:nowrap}
-.tok .fBack{transform:rotateY(180deg) translateZ(calc(var(--u,5px) * .76));overflow:hidden;
+.tok .fBack{transform:rotateY(180deg) translateZ(calc(var(--u,5px) * .62));overflow:hidden;
   background:radial-gradient(circle at 34% 28%,#fff 0,#d7f1ff 30%,#86cdf0 68%,#3f8cc0 100%);
   box-shadow:inset 0 0 0 calc(var(--u,5px) * .2) #fff,inset 0 0 0 calc(var(--u,5px) * .52) #5fb0dc,inset 0 0 calc(var(--u,5px) * .9) rgba(30,100,160,.45)}
 .tok .fBack .snow{position:absolute;left:calc(50% - var(--u,5px) * 1.65);top:calc(50% - var(--u,5px) * 3.35);width:calc(var(--u,5px) * 3.3);height:calc(var(--u,5px) * 3.3);filter:drop-shadow(0 0 calc(var(--u,5px) * .35) #fff)}
-.tok .fBack .fz{position:absolute;left:0;right:0;bottom:calc(var(--u,5px) * 1.85);text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.12);letter-spacing:.03em;line-height:1;color:#0c4571;text-shadow:0 0 calc(var(--u,5px) * .3) #fff,0 0 calc(var(--u,5px) * .15) #fff}
+.tok .fBack .fz{position:absolute;left:0;right:0;bottom:calc(var(--u,5px) * 1.85);text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.25);letter-spacing:.03em;line-height:1;color:#0c4571;text-shadow:0 0 calc(var(--u,5px) * .3) #fff,0 0 calc(var(--u,5px) * .15) #fff}
 .tok .fBack b{position:absolute;bottom:calc(var(--u,5px) * .7);left:0;right:0;text-align:center;font-weight:900;font-size:calc(var(--u,5px) * 1.15);line-height:1;color:#1f5f8a}
-.tok .fBack::after{content:"";position:absolute;inset:0;border-radius:50%;background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,.8) 50%,transparent 64%);background-size:260% 100%;animation:glint 2.8s linear infinite}
+.tok .fBack::after{content:"";position:absolute;inset:0;border-radius:var(--rad);background:linear-gradient(115deg,transparent 36%,rgba(255,255,255,.8) 50%,transparent 64%);background-size:260% 100%;animation:glint 2.8s linear infinite}
 @keyframes glint{from{background-position:130% 0}to{background-position:-130% 0}}
 .tok .hit{width:calc(var(--d) * 1.15);height:calc(var(--d) * 1.15);left:calc(var(--d) * -.575);top:calc(var(--d) * -.575);pointer-events:auto;cursor:default}
 .tok.can .hit{cursor:pointer}
@@ -355,11 +355,11 @@ input{font:inherit}
 .bp i{position:absolute;border-radius:50%;transform:translateZ(calc(var(--u) * var(--z,0)))}
 .bp .sh{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.6) 55%,transparent 100%);transform:translateZ(calc(var(--u) * .06))}
 /* token */
-.bt .sh{left:calc(var(--u) * -4.4);top:calc(var(--u) * -4.1);width:calc(var(--u) * 9);height:calc(var(--u) * 9)}
-.bt i{left:calc(var(--u) * -3.7);top:calc(var(--u) * -3.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);background:color-mix(in srgb,var(--tc) var(--p),#000)}
-.bt .tp{position:absolute;left:calc(var(--u) * -3.7);top:calc(var(--u) * -3.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);border-radius:50%;display:grid;place-items:center;transform:translateZ(calc(var(--u) * 2.45));
+.bt .sh{left:calc(var(--u) * -3.2);top:calc(var(--u) * -2.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);border-radius:18%;background:rgba(0,0,0,.55);filter:blur(calc(var(--u) * .7))}
+.bt i{border-radius:18%;left:calc(var(--u) * -3.7);top:calc(var(--u) * -3.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);background:color-mix(in srgb,var(--tc) var(--p),#000)}
+.bt .tp{position:absolute;left:calc(var(--u) * -3.7);top:calc(var(--u) * -3.7);width:calc(var(--u) * 7.4);height:calc(var(--u) * 7.4);border-radius:18%;display:grid;place-items:center;transform:translateZ(calc(var(--u) * 1.65));
   background:radial-gradient(circle at 34% 28%,var(--hi) 0,var(--tc) 46%,var(--lo) 100%);
-  box-shadow:inset 0 0 0 calc(var(--u) * .2) rgba(255,255,255,.75),inset 0 0 0 calc(var(--u) * .52) var(--lo)}
+  box-shadow:inset 0 0 0 calc(var(--u) * .18) rgba(255,255,255,.5)}
 .bt .tp b{font-weight:900;font-size:calc(var(--u) * 3.5);line-height:1;color:#fff;text-shadow:0 calc(var(--u) * .14) 0 rgba(0,0,0,.5)}
 .bt .bk{animation:tokBob 3.4s ease-in-out infinite alternate;animation-delay:var(--dl,0s)}
 @keyframes tokBob{from{transform:translateZ(0)}to{transform:translateZ(calc(var(--u) * 1.6))}}
@@ -463,7 +463,7 @@ input{font:inherit}
     <div class="sparks" id="sparks" aria-hidden="true"></div>
     <div class="welcome-center">
       <h1 class="title-rk" aria-label="RANKCO Game"><span class="t1">RANKCO</span><span class="t2"><i class="d1"></i><i class="d2"></i><em>GAME</em><i class="d3"></i><i class="d4"></i></span></h1>
-      <p class="slogan"><b class="c1">Strategy.</b> <b class="c2">Luck.</b> <b class="c3">Decision Making.</b> <b class="c4">Resource and Risk Management.</b></p>
+      <p class="slogan"><b class="c1">Strategy.</b> <b class="c2">Luck.</b> <b class="c3">Decision Making.</b> <b class="c4">Risk Management.</b></p>
       <button class="btn play" id="playNow">Play Now</button>
     </div>
   </section>
@@ -1190,8 +1190,9 @@ const RankcoAI = (() => {
     <rect x="-7" y="-7" width="114" height="116" rx="4.6" fill="url(#grain)"/>
     <rect x="-6.3" y="-6.3" width="112.6" height="114.6" rx="4" fill="none" stroke="#e0a066" stroke-opacity=".5" stroke-width=".4"/>
     <rect x="-4.7" y="-4.7" width="109.4" height="111.6" rx="3" fill="none" stroke="#f6ecd9" stroke-width=".5" stroke-dasharray="1.7 1.1" stroke-linecap="round"/>
+    <rect x="-3.5" y="-3.5" width="105.9" height="109.4" rx="3.3" fill="#0a0a0d"/>
     <rect x="-2.4" y="-2.4" width="104.8" height="107.2" rx="2.2" fill="#f8f8f4" stroke="#3a2010" stroke-width=".5"/>
-    <text x="101.8" y="103.2" text-anchor="end" font-size="1.9" font-weight="700" fill="#222">Country Of Origin Uganda</text>`;
+    <text x="99.4" y="102.95" text-anchor="end" font-size="2.05" font-weight="800" letter-spacing=".05" fill="#15151a">Country Of Origin Uganda</text>`;
     // outer ring: 4 sides x 9 tiles – home corner, three stars, soldier, three stars, arrow
     for (let k = 0; k < E.RING; k++) {
       const [c, r] = ringXY(k), side = Math.floor(k / E.SIDE), j = k % E.SIDE, col = E.COLORS[side], [cx, cy] = cellXY(c, r);
@@ -1223,7 +1224,7 @@ const RankcoAI = (() => {
       h += `<rect x="${tx}" y="${ty}" width="${TRAY_W}" height="${TRAY_H}" rx="5" fill="rgba(6,6,12,.55)" stroke="${HEX[pl.color]}" stroke-width=".7"/>`;
       [0, 1].forEach((i) => {
         const [yx, yy] = yardXY(pl.color, i), [cx, cy] = coinXY(pl.color, i);
-        h += `<circle cx="${yx}" cy="${yy}" r="4.3" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>
+        h += `<rect x="${(yx - 3.7).toFixed(2)}" y="${(yy - 3.7).toFixed(2)}" width="7.4" height="7.4" rx="1.4" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>
               <g id="cs-${pi}-${i}" transform="translate(${cx} ${cy})"><circle class="slot" r="3.4" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.55)" stroke-width=".4" stroke-dasharray=".9 .8" style="display:none"/>
               <g class="cu"><circle r="3.5" cx=".3" cy=".55" fill="rgba(0,0,0,.4)"/><use href="#rcoin" transform="scale(.068)"/></g></g>`;
       });
@@ -1233,7 +1234,7 @@ const RankcoAI = (() => {
 
   /* ---- 3D tokens (HTML/CSS-3D layer above the SVG board) ---- */
   const SNOW = `<svg class="snow" viewBox="-10 -10 20 20" aria-hidden="true"><g fill="none" stroke="#2f7fb2" stroke-width="1.5" stroke-linecap="round">${[0, 60, 120, 180, 240, 300].map((a) => `<g transform="rotate(${a})"><path d="M0 0V-8.6M0 -4.6L-2.4 -6.8M0 -4.6L2.4 -6.8"/></g>`).join('')}</g><circle r="1.5" fill="#e9f9ff" stroke="#2f7fb2" stroke-width=".8"/></svg>`;
-  const EDGE = Array.from({ length: 9 }, (_, k) => `<i style="--z:${(-0.72 + k * 0.18).toFixed(2)};--b:${(0.5 + k * 0.055).toFixed(2)}"></i>`).join('');
+  const EDGE = Array.from({ length: 9 }, (_, k) => `<i style="--z:${(-0.6 + k * 0.15).toFixed(2)};--b:${(0.5 + k * 0.055).toFixed(2)}"></i>`).join('');
   function tokensHTML(players) {
     return players.map((pl, pi) => pl.tokens.map((t, ti) => `<div class="tok" id="tok-${pi}-${ti}" data-pi="${pi}" data-ti="${ti}" style="--c:${HEX[pl.color]};--base:${HEX[pl.color]};--hi:${LIGHT[pl.color]};--lo:${DARKC[pl.color]}">
       <div class="sc"><div class="shadow"></div><div class="glow"></div><div class="halo"></div>
@@ -1813,7 +1814,7 @@ const RankcoAI = (() => {
       let s = `<rect x="${tx}" y="${ty}" width="${TRAY_W}" height="${TRAY_H}" rx="5" fill="rgba(6,6,12,.55)" stroke="${HEX[c]}" stroke-width=".7"/>`;
       [0, 1].forEach((i) => {
         const [yx, yy] = yardXY(c, i), [cx, cy] = coinXY(c, i);
-        s += `<circle cx="${yx}" cy="${yy}" r="4.3" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>` +
+        s += `<rect x="${(yx - 3.7).toFixed(2)}" y="${(yy - 3.7).toFixed(2)}" width="7.4" height="7.4" rx="1.4" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>` +
              `<circle cx="${cx}" cy="${cy}" r="3.4" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.55)" stroke-width=".4" stroke-dasharray=".9 .8"/>`;
       });
       return s;
@@ -1822,7 +1823,7 @@ const RankcoAI = (() => {
   function bgPropsHTML() {
     const at = (x, y) => `left:${((x + 9) / 118 * 100).toFixed(3)}%;top:${((y + 21) / 144 * 100).toFixed(3)}%`;
     const token = (color, xy, n, dl) => `<div class="bp bt" style="${at(xy[0], xy[1])};--tc:${HEX[color]};--hi:${LIGHT[color]};--lo:${DARKC[color]};--dl:${dl}s"><div class="sh"></div><div class="bk">` +
-      Array.from({ length: 6 }, (_, k) => `<i style="--z:${(k * .4).toFixed(2)};--p:${38 + k * 9}%"></i>`).join('') + `<div class="tp"><b>${n}</b></div></div></div>`;
+      Array.from({ length: 6 }, (_, k) => `<i style="--z:${(k * .28).toFixed(2)};--p:${38 + k * 9}%"></i>`).join('') + `<div class="tp"><b>${n}</b></div></div></div>`;
     const coin = (xy, dl) => `<div class="bp bc" style="${at(xy[0], xy[1])};--dl:${dl}s"><div class="sh"></div><div class="bk">` +
       Array.from({ length: 4 }, (_, k) => `<i style="--z:${(k * .3).toFixed(2)};--p:${45 + k * 16}%"></i>`).join('') +
       `<div class="cf"><svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg></div><div class="cb"><svg viewBox="-50 -50 100 100" aria-hidden="true"><use href="#rcoin"/></svg></div></div></div>`;
