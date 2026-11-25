@@ -390,6 +390,59 @@ input{font:inherit}
   54%{transform:translateZ(calc(var(--h) + var(--u) * 12))}60%,78%{transform:translateZ(var(--h))}84%{transform:translateZ(calc(var(--h) + var(--u) * 12))}90%,100%{transform:translateZ(var(--h))}}
 @keyframes dRoll{0%,18%{transform:rotateZ(10deg) rotateX(0deg) rotateY(0deg)}30%,48%{transform:rotateZ(-30deg) rotateX(270deg) rotateY(180deg)}
   60%,78%{transform:rotateZ(25deg) rotateX(540deg) rotateY(360deg)}90%,100%{transform:rotateZ(10deg) rotateX(720deg) rotateY(450deg)}}
+
+/* ---------- ONLINE COMMS: chat, reactions, voice call ---------- */
+body.olive .g-body{padding-bottom:92px}
+body.olive #s-results .wrap{padding-bottom:110px}
+.ol-dock{position:fixed;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:95;display:none;gap:10px}
+body.olive .ol-dock{display:flex}
+.dk{position:relative;width:52px;height:52px;border-radius:50%;font-size:24px;display:grid;place-items:center;background:linear-gradient(160deg,#2c2f42,#0b0b12);border:1px solid rgba(255,255,255,.55);box-shadow:0 8px 20px rgba(0,0,0,.55);transition:transform .18s,box-shadow .18s}
+.dk:hover{transform:translateY(-3px)}
+.dk.live{border-color:#4fd982;box-shadow:0 0 0 3px rgba(79,217,130,.35),0 8px 20px rgba(0,0,0,.55)}
+.dk.ring{border-color:#f5a91a;animation:ringPulse 1s infinite}
+@keyframes ringPulse{50%{box-shadow:0 0 0 8px rgba(245,169,26,.35)}}
+.bdg[hidden]{display:none}
+.bdg{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#e0292e;font-size:11px;font-weight:800;display:grid;place-items:center;border:2px solid #0b0b12;font-family:'Montserrat',sans-serif}
+.emo-pop{position:fixed;right:12px;bottom:76px;z-index:96;display:grid;grid-template-columns:repeat(6,1fr);gap:4px;padding:10px;border-radius:20px;background:rgba(14,14,24,.97);border:1px solid rgba(255,255,255,.4);box-shadow:0 14px 34px rgba(0,0,0,.6);width:min(330px,calc(100vw - 24px))}
+.emo-pop[hidden],.chat-panel[hidden],.call-pill[hidden],.chat-toast[hidden],.toast[hidden]{display:none}
+.emo-pop button{font-size:28px;padding:6px 0;border-radius:12px;transition:transform .12s}
+.emo-pop button:hover{transform:scale(1.25);background:rgba(255,255,255,.1)}
+.chat-panel{position:fixed;right:12px;bottom:76px;z-index:96;width:min(370px,calc(100vw - 24px));height:min(480px,calc(100dvh - 150px));display:flex;flex-direction:column;border-radius:24px;overflow:hidden;box-shadow:0 18px 44px rgba(0,0,0,.65)}
+.cp-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.18);font-weight:800}
+.cp-head .dot{width:12px;height:12px;border-radius:50%;background:var(--c,#999);box-shadow:0 0 10px var(--c,transparent);flex:none}
+.cp-head small{display:block;font-size:11px;font-weight:600;color:#cfcbe8}
+.cp-head .sp{margin-left:auto;display:flex;gap:8px}
+.cp-btn{width:38px;height:38px;border-radius:50%;font-size:18px;display:grid;place-items:center;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.35)}
+.cp-btn.live{border-color:#4fd982;background:rgba(30,158,74,.4)}
+.cp-list{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:84%;padding:8px 12px;border-radius:16px 16px 16px 4px;background:rgba(255,255,255,.13);font-size:14px;line-height:1.35;word-break:break-word;align-self:flex-start;animation:rise .25s both}
+.msg.me{align-self:flex-end;border-radius:16px 16px 4px 16px;background:var(--btn)}
+.msg b{display:block;font-size:11px;letter-spacing:.04em;margin-bottom:2px}
+.msg i{display:block;font-style:normal;font-size:10px;opacity:.6;margin-top:3px;text-align:right}
+.msg.e{background:none;font-size:34px;padding:0 4px;line-height:1.1}
+.cp-empty{margin:auto;text-align:center;color:#bdb8e0;font-size:13px;line-height:1.6;padding:20px}
+.cp-strip{display:flex;gap:6px;overflow-x:auto;padding:6px 10px;border-top:1px solid rgba(255,255,255,.12);scrollbar-width:none}
+.cp-strip::-webkit-scrollbar{display:none}
+.cp-strip button{flex:none;font-size:24px;padding:2px 6px;border-radius:12px}
+.cp-strip.q button{font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:99px;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.3);white-space:nowrap}
+.cp-form{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(255,255,255,.18)}
+.cp-form input{flex:1;min-width:0;padding:11px 14px;border-radius:99px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;font-weight:600;font-size:16px;outline:none}
+.cp-form input:focus{border-color:#fff;box-shadow:0 0 0 3px rgba(154,134,230,.5)}
+.cp-form .btn{padding:0 18px;font-size:13px}
+.chat-toast{position:fixed;right:12px;bottom:76px;z-index:94;max-width:min(300px,calc(100vw - 24px));padding:10px 14px;border-radius:18px 18px 4px 18px;background:rgba(14,14,24,.97);border:1px solid rgba(255,255,255,.5);font-size:13.5px;font-weight:600;box-shadow:0 10px 26px rgba(0,0,0,.6);animation:rise .3s both;cursor:pointer;word-break:break-word}
+.chat-toast b{display:block;font-size:11px;color:var(--c,#cfcbe8);margin-bottom:2px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);z-index:130;padding:10px 18px;border-radius:99px;background:rgba(10,10,18,.96);border:1px solid rgba(255,255,255,.5);font-weight:700;font-size:13.5px;max-width:calc(100vw - 24px);text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.6)}
+.call-pill{position:fixed;top:max(8px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:97;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-radius:99px;background:rgba(10,10,18,.95);border:1.5px solid #4fd982;box-shadow:0 10px 28px rgba(0,0,0,.6);font-weight:800;font-size:13px;white-space:nowrap;max-width:calc(100vw - 12px)}
+.call-pill.ringing{border-color:#f5a91a;animation:ringPulse 1s infinite}
+.call-pill .pd{width:10px;height:10px;border-radius:50%;background:#4fd982;animation:pulse 1.2s infinite;flex:none}
+.call-pill.ringing .pd{background:#f5a91a}
+.call-pill button{padding:7px 14px;border-radius:99px;font-weight:800;font-size:12px;letter-spacing:.05em;text-transform:uppercase;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.4)}
+.call-pill button.ic{padding:6px 10px;font-size:15px}
+.call-pill .ok{background:#1e9e4a;border-color:#6ff0a0}.call-pill .no{background:#b3261e;border-color:#ff8a8d}.call-pill .muted{background:#a86a00;border-color:#ffc766}
+.react-layer{position:fixed;inset:0;pointer-events:none;z-index:93;overflow:hidden}
+.rx{position:absolute;bottom:90px;display:flex;flex-direction:column;align-items:center;font-size:clamp(46px,10vw,84px);line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));animation:rxUp 2.8s cubic-bezier(.2,.7,.3,1) forwards}
+.rx small{font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;background:rgba(8,8,14,.85);border:1px solid var(--c,#fff);margin-top:6px;letter-spacing:.05em;font-family:'Montserrat',sans-serif}
+@keyframes rxUp{0%{transform:translateY(0) scale(.3);opacity:0}12%{transform:translateY(-30px) scale(1.25);opacity:1}30%{transform:translateY(-120px) translateX(var(--sw,20px)) scale(1)}100%{transform:translateY(-62vh) translateX(calc(var(--sw,20px) * -1)) scale(1.1);opacity:0}}
 </style>
 </head>
 <body>
@@ -463,7 +516,7 @@ input{font:inherit}
     <div class="sparks" id="sparks" aria-hidden="true"></div>
     <div class="welcome-center">
       <h1 class="title-rk" aria-label="RANKCO Game"><span class="t1">RANKCO</span><span class="t2"><i class="d1"></i><i class="d2"></i><em>GAME</em><i class="d3"></i><i class="d4"></i></span></h1>
-      <p class="slogan"><b class="c1">Strategy.</b> <b class="c2">Luck.</b> <b class="c3">Decision Making.</b> <b class="c4">Resource and Risk Management.</b></p>
+      <p class="slogan"><b class="c1">Strategy.</b> <b class="c2">Luck.</b> <b class="c3">Decision Making.</b> <b class="c4">Risk Management.</b></p>
       <button class="btn play" id="playNow">Play Now</button>
     </div>
   </section>
@@ -525,6 +578,25 @@ input{font:inherit}
   </section>
 
   <div class="modal hidden" id="modal"></div>
+  <div class="react-layer" id="reactLayer" aria-hidden="true"></div>
+  <div class="call-pill" id="callPill" hidden></div>
+  <div class="chat-toast" id="chatToast" hidden></div>
+  <div class="toast" id="toast" hidden role="status"></div>
+  <div class="emo-pop" id="emoPop" hidden></div>
+  <aside class="chat-panel glass" id="chatPanel" hidden aria-label="Chat">
+    <div class="cp-head"><span class="dot" id="cpDot"></span><div><span id="cpName">Opponent</span><small id="cpSub">offline</small></div>
+      <div class="sp"><button class="cp-btn" id="cpCall" title="Voice call" aria-label="Voice call">🎙</button><button class="cp-btn" id="cpClose" aria-label="Close chat">✕</button></div></div>
+    <div class="cp-list" id="cpList"></div>
+    <div class="cp-strip q" id="cpQuick"></div>
+    <div class="cp-strip" id="cpEmo"></div>
+    <form class="cp-form" id="cpForm" autocomplete="off"><input id="cpIn" maxlength="300" placeholder="Type a message…" aria-label="Message"><button class="btn" type="submit">Send</button></form>
+  </aside>
+  <div class="ol-dock" id="olDock">
+    <button class="dk" id="dkEmo" aria-label="Send a reaction">😂</button>
+    <button class="dk" id="dkMic" aria-label="Voice call">🎙</button>
+    <button class="dk" id="dkChat" aria-label="Chat">💬<span class="bdg" id="chatBdg" hidden>0</span></button>
+  </div>
+  <audio id="remoteAudio" autoplay playsinline></audio>
 </div>
 <script>
 /* Splash logo: fall back to the built-in emblem + wordmark if logo.png cannot be loaded */
@@ -1709,13 +1781,16 @@ const RankcoAI = (() => {
   function olOnMessage(o, m) {
     switch (m.type) {
       case 'state': olState(o, m); break;
+      case 'chat': chatPush(m.msg, true); break;
+      case 'chat_err': toast(m.error || 'Message not sent'); break;
+      case 'rtc': rtcOnMessage(m); break;
       case 'action':
         if (!o.started) break;
         if (m.seq < o.recv) break;                                   // already have it
         if (m.seq > o.recv) { olResync(); break; }                   // gap → full resync
         o.recv++; o.q.push(m); olPump(); break;
       case 'presence': {
-        o.seats = m.seats;
+        o.seats = m.seats; commsPresence();
         const opp = m.seats.find((x) => x.pid !== o.pid && x.pid !== null);
         const over = app.session && app.session.state.phase === 'over';
         if (o.started && !over && opp && !opp.online) setConn('Opponent disconnected – waiting for them to return…', 'warn');
@@ -1736,7 +1811,7 @@ const RankcoAI = (() => {
     }
   }
   function olState(o, m) {
-    o.seats = m.seats; o.pid = m.pid; o.status = m.status;
+    o.seats = m.seats; o.pid = m.pid; o.status = m.status; commsState(o, m);
     if (m.status === 'closed') {
       olLeave(false);
       modal('<h3>Room closed</h3><p>This match has ended.</p>', [{ label: 'Back to menu', fn: () => { renderModes(); go('modes'); } }]);
@@ -1793,6 +1868,8 @@ const RankcoAI = (() => {
   function olLeave(notify) {
     const o = app.online; if (!o) return;
     o.left = true;
+    if (call.st !== 'idle') rtcSend({ kind: 'hangup' });
+    commsStop();
     try { if (notify && o.ws && o.ws.readyState === 1) o.ws.send('{"type":"leave"}'); if (o.ws) o.ws.close(); } catch (e) {}
     app.online = null; app.loop++; app.busy = false; setConn('');
   }
@@ -1843,8 +1920,256 @@ const RankcoAI = (() => {
     return out;
   }
 
+  /* ===================================================================
+     ONLINE COMMS: text chat, emoji reactions and a WebRTC voice call.
+     Everything travels over the same WebSocket as the moves; audio itself
+     goes peer-to-peer (the server only relays the call set-up messages).
+     =================================================================== */
+  const EMOJIS = ['😂', '🤣', '😭', '😎', '😈', '🤡', '💀', '🔥', '👏', '🙈', '😡', '🥶', '😴', '🤯', '🍀', '🎲', '💸', '🤝', '🫡', '🥳', '🙏', '😜', '🤪', '👀'];
+  const QUICK = ['GG 🤝', 'Nice move!', 'Oops 😅', 'Hurry up ⏰', 'Good luck 🍀', 'Rematch? 🔁'];
+  const cm = { open: false, unread: 0, seen: -1, toastT: 0, tT: 0 };
+  const call = { st: 'idle', pc: null, stream: null, muted: false, t0: 0, tick: 0, ice: [], offer: null, tmo: 0, ring: 0, dis: 0 };
+  const seatInfo = (s) => (app.online && app.online.seats ? app.online.seats[s] : null);
+  const oppInfo = () => (app.online ? seatInfo(1 - app.online.seat) : null);
+  function wsSend(obj) { const o = app.online; if (o && o.ws && o.ws.readyState === 1) { o.ws.send(JSON.stringify(obj)); return true; } return false; }
+  const rtcSend = (m) => wsSend(Object.assign({ type: 'rtc' }, m));
+  function toast(text) {
+    const t = $('#toast'); t.textContent = text; t.hidden = false;
+    clearTimeout(cm.tT); cm.tT = setTimeout(() => { t.hidden = true; }, 3200);
+  }
+
+  function commsInit() {
+    const btns = EMOJIS.map((e) => `<button type="button" data-e="${e}" aria-label="Send ${e}">${e}</button>`).join('');
+    $('#emoPop').innerHTML = btns; $('#cpEmo').innerHTML = btns;
+    $('#cpQuick').innerHTML = QUICK.map((q) => `<button type="button" data-q="${esc(q)}">${esc(q)}</button>`).join('');
+    $('#emoPop').onclick = (e) => { const b = e.target.closest('[data-e]'); if (b) { sendEmoji(b.dataset.e); $('#emoPop').hidden = true; } };
+    $('#cpEmo').onclick = (e) => { const b = e.target.closest('[data-e]'); if (b) sendEmoji(b.dataset.e); };
+    $('#cpQuick').onclick = (e) => { const b = e.target.closest('[data-q]'); if (b) sendChat(b.dataset.q); };
+    $('#dkEmo').onclick = () => { const p = $('#emoPop'); p.hidden = !p.hidden; if (!p.hidden) chatClose(); };
+    $('#dkChat').onclick = () => (cm.open ? chatClose() : chatOpen());
+    $('#cpClose').onclick = chatClose;
+    $('#dkMic').onclick = callBtn; $('#cpCall').onclick = callBtn;
+    $('#cpForm').onsubmit = (e) => { e.preventDefault(); const i = $('#cpIn'); if (sendChat(i.value)) i.value = ''; };
+    $('#chatToast').onclick = () => chatOpen();
+    $('#callPill').onclick = (e) => {
+      const b = e.target.closest('[data-a]'); if (!b) return;
+      ({ accept: callAccept, decline: callDecline, end: callHangup, mute: callMute })[b.dataset.a]();
+    };
+    document.addEventListener('click', (e) => { const p = $('#emoPop'); if (!p.hidden && !e.target.closest('#emoPop, #dkEmo')) p.hidden = true; });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { $('#emoPop').hidden = true; if (cm.open) chatClose(); } });
+  }
+  function commsState(o, m) {
+    if (m.ice) o.ice = m.ice;
+    o.chat = Array.isArray(m.chat) ? m.chat : [];
+    const playing = m.status === 'playing';
+    document.body.classList.toggle('olive', playing);
+    if (!playing) return;
+    chatHead(); chatRecount();
+    if (cm.open) chatRender();
+  }
+  function commsPresence() { chatHead(); callUi(); }
+  function commsStop() {
+    callEnd(null);
+    chatClose(); cm.unread = 0; cm.seen = -1; badge();
+    document.body.classList.remove('olive');
+    $('#emoPop').hidden = true; $('#chatToast').hidden = true; $('#toast').hidden = true; $('#reactLayer').innerHTML = '';
+    $('#cpList').innerHTML = '';
+  }
+
+  /* ---- text chat + reactions ---- */
+  function sendChat(text) {
+    text = String(text || '').trim(); if (!text) return false;
+    if (!wsSend({ type: 'chat', text })) { toast('Reconnecting… try again in a moment'); return false; }
+    return true;
+  }
+  function sendEmoji(e) { if (!wsSend({ type: 'emoji', emoji: e })) toast('Reconnecting… try again in a moment'); }
+  function badge() { const b = $('#chatBdg'); b.hidden = !cm.unread; b.textContent = cm.unread > 9 ? '9+' : cm.unread; }
+  function chatHead() {
+    const opp = oppInfo(); if (!opp) return;
+    $('#cpName').textContent = opp.name; $('#cpDot').style.setProperty('--c', HEX[opp.color] || '#999');
+    $('#cpSub').textContent = opp.online ? (call.st === 'connected' ? 'online · on a voice call' : 'online') : 'offline – messages will wait';
+  }
+  function chatRecount() {
+    const o = app.online, list = o.chat || [], last = list.length ? list[list.length - 1].id : -1;
+    if (cm.open) { cm.seen = last; cm.unread = 0; }
+    else cm.unread = list.filter((x) => x.kind === 'm' && x.seat !== o.seat && x.id > cm.seen).length;
+    badge();
+  }
+  function chatRender() {
+    const o = app.online, box = $('#cpList'); if (!o) return;
+    if (!o.chat || !o.chat.length) { box.innerHTML = '<div class="cp-empty">No messages yet.<br>Say hi 👋 or throw a 😂</div>'; return; }
+    box.innerHTML = o.chat.map((m) => {
+      const mine = m.seat === o.seat, si = seatInfo(m.seat) || {};
+      const t = new Date(m.ts * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return `<div class="msg${mine ? ' me' : ''}${m.kind === 'e' ? ' e' : ''}">${mine || m.kind === 'e' ? '' : `<b style="color:${LIGHT[si.color] || '#fff'}">${esc(si.name || 'Opponent')}</b>`}${esc(m.text)}<i>${t}</i></div>`;
+    }).join('');
+    box.scrollTop = box.scrollHeight;
+  }
+  function chatOpen() {
+    const o = app.online; if (!o) return;
+    cm.open = true; $('#chatPanel').hidden = false; $('#emoPop').hidden = true; $('#chatToast').hidden = true;
+    chatHead(); chatRecount(); chatRender();
+    if (window.matchMedia && matchMedia('(hover:hover)').matches) $('#cpIn').focus();
+  }
+  function chatClose() { cm.open = false; $('#chatPanel').hidden = true; }
+  function chatPush(msg, live) {
+    const o = app.online; if (!o || !msg) return;
+    o.chat = o.chat || [];
+    if (o.chat.some((x) => x.id === msg.id)) return;
+    o.chat.push(msg); if (o.chat.length > 100) o.chat.shift();
+    if (live && msg.kind === 'e') reactFloat(msg);
+    if (cm.open) { cm.seen = msg.id; chatRender(); return; }
+    if (msg.kind === 'm' && msg.seat !== o.seat) {
+      cm.unread++; badge();
+      const si = seatInfo(msg.seat) || {}, el = $('#chatToast');
+      el.style.setProperty('--c', LIGHT[si.color] || '#fff');
+      el.innerHTML = `<b>${esc(si.name || 'Opponent')}</b>${esc(msg.text.slice(0, 120))}`; el.hidden = false;
+      clearTimeout(cm.toastT); cm.toastT = setTimeout(() => { el.hidden = true; }, 3800);
+    }
+  }
+  function reactFloat(msg) {
+    const o = app.online, si = seatInfo(msg.seat) || {}, mine = msg.seat === o.seat;
+    const el = document.createElement('div'); el.className = 'rx';
+    el.style.left = (6 + Math.random() * 72) + '%';
+    el.style.setProperty('--sw', (Math.random() * 70 - 35).toFixed(0) + 'px'); el.style.setProperty('--c', HEX[si.color] || '#fff');
+    el.innerHTML = `<span>${esc(msg.text)}</span><small>${mine ? 'You' : esc(si.name || '')}</small>`;
+    $('#reactLayer').appendChild(el); setTimeout(() => el.remove(), 3000);
+  }
+
+  /* ---- voice call (WebRTC) ---- */
+  let actx = null;
+  function beep(freq, dur) {
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume();
+      const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+      o.type = 'sine'; o.frequency.value = freq; o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.18, t + .02); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.start(t); o.stop(t + dur + .02);
+    } catch (e) {}
+  }
+  function ringStart() {
+    ringStop();
+    const r = () => { beep(660, .18); setTimeout(() => beep(880, .18), 230); try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {} };
+    r(); call.ring = setInterval(r, 2200);
+  }
+  function ringStop() { clearInterval(call.ring); call.ring = 0; }
+  const getMic = () => navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }, video: false });
+  function stopStream() { if (call.stream) { call.stream.getTracks().forEach((t) => t.stop()); call.stream = null; } }
+  const oppOnline = () => { const s = oppInfo(); return !!(s && s.online); };
+
+  function callUi() {
+    const pill = $('#callPill'), opp = oppInfo(), name = esc(opp ? opp.name : 'Opponent'), mic = $('#dkMic'), cp = $('#cpCall');
+    mic.className = 'dk' + (call.st === 'connected' ? ' live' : call.st === 'ringing' ? ' ring' : '');
+    cp.className = 'cp-btn' + (call.st === 'connected' ? ' live' : '');
+    mic.textContent = cp.textContent = call.st === 'idle' ? '🎙' : '📞';
+    if (call.st === 'idle') { pill.hidden = true; return; }
+    pill.hidden = false; pill.className = 'call-pill' + (call.st === 'ringing' ? ' ringing' : '');
+    if (call.st === 'ringing') pill.innerHTML = `<span class="pd"></span><span>📞 ${name} is calling…</span><button class="ok" data-a="accept">Accept</button><button class="no" data-a="decline">Decline</button>`;
+    else if (call.st === 'calling') pill.innerHTML = `<span class="pd"></span><span>Calling ${name}…</span><button class="no" data-a="end">Cancel</button>`;
+    else if (call.st === 'connecting') pill.innerHTML = `<span class="pd"></span><span>Connecting…</span><button class="no" data-a="end">End</button>`;
+    else pill.innerHTML = `<span class="pd"></span><span>🎙 <span id="callTm">${callTime()}</span></span><button class="ic${call.muted ? ' muted' : ''}" data-a="mute" aria-label="${call.muted ? 'Unmute' : 'Mute'}">${call.muted ? '🔇' : '🎤'}</button><button class="ic no" data-a="end" aria-label="End call">📵</button>`;
+    chatHead();
+  }
+  function callTime() { const s = call.t0 ? Math.floor((Date.now() - call.t0) / 1000) : 0; return String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }
+  function callEnd(reason) {
+    clearTimeout(call.tmo); clearTimeout(call.dis); clearInterval(call.tick); ringStop();
+    if (call.pc) { try { call.pc.onconnectionstatechange = null; call.pc.close(); } catch (e) {} }
+    stopStream();
+    const a = $('#remoteAudio'); if (a) a.srcObject = null;
+    Object.assign(call, { st: 'idle', pc: null, offer: null, ice: [], muted: false, t0: 0, tick: 0 });
+    callUi();
+    if (reason) toast(reason);
+  }
+  function callConnected() {
+    if (call.st === 'connected') return;
+    call.st = 'connected'; call.t0 = Date.now(); clearTimeout(call.tmo);
+    clearInterval(call.tick); call.tick = setInterval(() => { const el = $('#callTm'); if (el) el.textContent = callTime(); }, 1000);
+    callUi();
+  }
+  function makePc() {
+    const o = app.online;
+    const pc = new RTCPeerConnection({ iceServers: (o && o.ice) || [{ urls: 'stun:stun.l.google.com:19302' }] });
+    pc.onicecandidate = (e) => { if (e.candidate) rtcSend({ kind: 'ice', candidate: e.candidate.toJSON() }); };
+    pc.ontrack = (e) => { const a = $('#remoteAudio'); a.srcObject = e.streams[0] || new MediaStream([e.track]); a.play().catch(() => {}); };
+    pc.onconnectionstatechange = () => {
+      if (call.pc !== pc) return;
+      const s = pc.connectionState;
+      if (s === 'connected') { clearTimeout(call.dis); callConnected(); }
+      else if (s === 'disconnected') { clearTimeout(call.dis); call.dis = setTimeout(() => { if (call.pc === pc && pc.connectionState !== 'connected') callEnd('Voice call lost'); }, 7000); }
+      else if (s === 'failed') callEnd('Voice connection failed – the network blocked it');
+    };
+    call.pc = pc;
+    call.stream.getTracks().forEach((t) => pc.addTrack(t, call.stream));
+    return pc;
+  }
+  function flushIce() { const pc = call.pc; if (!pc) return; call.ice.splice(0).forEach((c) => pc.addIceCandidate(c).catch(() => {})); }
+  async function callBtn() {
+    if (!app.online) return;
+    if (call.st === 'idle') return callStart();
+    if (call.st === 'ringing') return callAccept();
+    callHangup();
+  }
+  async function callStart() {
+    if (!app.online || call.st !== 'idle') return;
+    if (!oppOnline()) { toast('Your opponent is offline right now'); return; }
+    if (!navigator.mediaDevices || !window.RTCPeerConnection) { toast('Voice calls are not supported in this browser (needs https)'); return; }
+    call.st = 'calling'; callUi();
+    try { call.stream = await getMic(); } catch (e) { callEnd('Microphone blocked – allow it in your browser settings'); return; }
+    if (call.st !== 'calling') { stopStream(); return; }
+    try {
+      const pc = makePc(), offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      rtcSend({ kind: 'offer', sdp: offer.sdp });
+    } catch (e) { callEnd('Could not start the call'); return; }
+    call.tmo = setTimeout(() => { if (call.st === 'calling') { rtcSend({ kind: 'hangup' }); callEnd('No answer'); } }, 45000);
+  }
+  async function callAccept() {
+    if (call.st !== 'ringing') return;
+    ringStop(); clearTimeout(call.tmo);
+    const offer = call.offer; call.st = 'connecting'; callUi();
+    try { call.stream = await getMic(); } catch (e) { rtcSend({ kind: 'decline' }); callEnd('Microphone blocked – allow it in your browser settings'); return; }
+    if (call.st !== 'connecting') { stopStream(); return; }
+    try {
+      const pc = makePc();
+      await pc.setRemoteDescription({ type: 'offer', sdp: offer }); flushIce();
+      const ans = await pc.createAnswer(); await pc.setLocalDescription(ans);
+      rtcSend({ kind: 'answer', sdp: ans.sdp });
+    } catch (e) { rtcSend({ kind: 'hangup' }); callEnd('Could not join the call'); }
+  }
+  function callDecline() { rtcSend({ kind: 'decline' }); callEnd(null); }
+  function callHangup() { if (call.st === 'ringing') return callDecline(); if (call.st !== 'idle') { rtcSend({ kind: 'hangup' }); callEnd(null); } }
+  function callMute() {
+    if (!call.stream) return;
+    call.muted = !call.muted; call.stream.getAudioTracks().forEach((t) => { t.enabled = !call.muted; });
+    callUi();
+  }
+  function rtcOnMessage(m) {
+    const o = app.online; if (!o) return;
+    switch (m.kind) {
+      case 'offer':
+        if (call.st === 'calling') { if (o.seat === 0) return; callEnd(null); }      // both dialled at once: seat 0 wins
+        if (call.st !== 'idle') { rtcSend({ kind: 'busy' }); return; }
+        call.st = 'ringing'; call.offer = m.sdp; ringStart(); callUi();
+        call.tmo = setTimeout(() => { if (call.st === 'ringing') callDecline(); }, 45000);
+        break;
+      case 'answer':
+        if (call.pc && call.st === 'calling') {
+          call.st = 'connecting'; clearTimeout(call.tmo); callUi();
+          call.pc.setRemoteDescription({ type: 'answer', sdp: m.sdp }).then(flushIce).catch(() => callEnd('Call failed'));
+        }
+        break;
+      case 'ice':
+        if (call.pc && call.pc.remoteDescription) call.pc.addIceCandidate(m.candidate).catch(() => {}); else call.ice.push(m.candidate);
+        break;
+      case 'hangup': callEnd(call.st === 'ringing' ? 'Missed call' : (call.st === 'idle' ? null : 'Call ended')); break;
+      case 'decline': callEnd('Call declined'); break;
+      case 'busy': callEnd('Opponent is busy'); break;
+      case 'unavailable': callEnd('Opponent is offline'); break;
+    }
+  }
+
   /* ---- boot ---- */
-  buildOrbit();
+  buildOrbit(); commsInit();
   (function buildSparks() {                                  // drifting gold sparks on page 2
     let h = '';
     for (let i = 0; i < 26; i++) {
