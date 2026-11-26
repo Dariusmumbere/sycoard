@@ -660,6 +660,8 @@ const RankcoEngine = (() => {
   const inPlay = (t) => t.p >= 0 && t.p < GOAL;
   const layerOf = (p) => (p < 36 ? 0 : p < 64 ? 1 : p < 84 ? 2 : 3);
   const isHome = (p) => OFF.includes(p);                   // a colour's home corner on any layer
+  // A colour's safe zone: its own coloured side on every layer (home corner, stars, soldier, arrow).
+  const inSafe = (p) => p >= 0 && p < GOAL && (p - OFF[layerOf(p)]) < S_OF[layerOf(p)];
   const layerPos = (pl, p) => { const L = layerOf(p); return { L, k: (COLORS.indexOf(pl.color) * S_OF[L] + p - OFF[L]) % R_OF[L] }; };
 
   /* ---------- setup ---------- */
@@ -681,11 +683,13 @@ const RankcoEngine = (() => {
   }
 
   /* ---------- movement rules ---------- */
-  // Tokens of the same player cannot skip over or land on each other.
+  // Exact finish: a token may never overshoot the centre.
+  // Own tokens can't skip each other, except past (or onto) a frozen one.
   function canMove(pl, tok, v) {
     if (!inPlay(tok) || tok.frozen) return false;
     const to = tok.p + v;
-    return !pl.tokens.some((o) => o !== tok && inPlay(o) && o.p > tok.p && o.p <= to);
+    if (to > GOAL) return false;
+    return !pl.tokens.some((o) => o !== tok && inPlay(o) && !o.frozen && o.p > tok.p && o.p <= to);
   }
   const startFree = (pl) => !pl.tokens.some((t) => t.p === 0);
 
@@ -723,13 +727,13 @@ const RankcoEngine = (() => {
       } else if (t.frozen) {
         if (v === 6) free.push({ type: 'unfreeze', token: t.id });
         if (P.coins > 0) paid.push({ type: 'unfreeze_pay', token: t.id, paid: true });
-      } else if (v === 1 && t.p >= FREEZE_FROM) {
-        free.push({ type: 'freeze', token: t.id });          // rolling a 1 at three/four-star freezes it
+      } else if (v === 1 && t.p >= FREEZE_FROM && !inSafe(t.p) && t.p + 1 < GOAL) {
+        free.push({ type: 'freeze', token: t.id });          // rolling a 1 at three/four-star freezes it (not on own colour, not on the final step)
       } else if (canMove(P, t, v)) {
         free.push({ type: 'move', token: t.id });
       }
     });
-    if (s.bonus && P.spent > 0) free.push({ type: 'recover' });
+    if (v === 6 && P.spent > 0) free.push({ type: 'recover' });   // a 6: promote a token OR reclaim a spent coin
     if (free.length === 0) free.push({ type: 'pass', free0: true });
     // 'pass' is only a real choice when a paid alternative exists; otherwise it is automatic
     return free.concat(paid);
@@ -769,8 +773,8 @@ const RankcoEngine = (() => {
     s.players.forEach((op, oi) => {
       if (oi === pi) return;
       op.tokens.forEach((ot, oti) => {
-        // home tile protects; frozen tokens are unaffected by setbacks
-        if (inPlay(ot) && !ot.frozen && !isHome(ot.p) && tileOf(op, ot.p) === tile) victims.push({ pi: oi, ti: oti });
+        // an owner's coloured safe zone protects; frozen tokens are unaffected by setbacks
+        if (inPlay(ot) && !ot.frozen && !inSafe(ot.p) && tileOf(op, ot.p) === tile) victims.push({ pi: oi, ti: oti });
       });
     });
     let salute = false;
@@ -900,7 +904,7 @@ const RankcoEngine = (() => {
   }
 
   return { COLORS, SIDE, RING, LAYERS, S_OF, R_OF, OFF, LANE, GOAL, YARD, FREEZE_FROM, START_INDEX, SALUTE_OWNER,
-           createGame, listOptions, autoAction, apply, canMove, tileOf, levelOf, inPlay, layerOf, layerPos, isHome, progressOf, ranking };
+           createGame, listOptions, autoAction, apply, canMove, tileOf, levelOf, inPlay, layerOf, layerPos, isHome, inSafe, progressOf, ranking };
 })();
 
 
@@ -941,7 +945,7 @@ const RankcoAI = (() => {
             }
           });
         });
-        if (d === 'hard' && t.p >= E.FREEZE_FROM) score -= 1.6;   // a roll of 1 would freeze it
+        if (d === 'hard' && t.p >= E.FREEZE_FROM && !E.inSafe(t.p)) score -= 1.6;   // a roll of 1 would freeze it
       }
     });
     s.players.forEach((op, oi) => {
@@ -1448,7 +1452,7 @@ const RankcoAI = (() => {
       case 'unfreeze': return { i: '🔥', a: `Unfreeze ${T}`, b: 'Rolled a 6', cls: 'good' };
       case 'unfreeze_pay': return { i: COIN, a: `Spend 1 coin: unfreeze ${T}`, b: s.phase === 'roll' ? 'Then roll as normal' : 'Skips this roll', cls: 'paid' };
       case 'freeze': return { i: '❄', a: `Freeze ${T}`, b: `Rolled a 1 at ${'★'.repeat(E.levelOf(t.p))}`, cls: 'danger' };
-      case 'recover': return { i: COIN, a: 'Reclaim a spent coin', b: 'Use your bonus roll to take one back from the pot', cls: 'good' };
+      case 'recover': return { i: COIN, a: 'Reclaim a spent coin', b: 'Use this 6 to take one back from the pot', cls: 'good' };
       case 'pass': return { i: '⏭', a: 'Skip this roll', b: 'Keep your coins', cls: '' };
       case 'setback_pay': return { i: COIN, a: 'Pay 1 coin – hold your tile', b: `${T} stays where it is`, cls: 'paid' };
       case 'setback_accept': return { i: '⏪', a: 'Accept the setback', b: `${T} goes back 6 tiles`, cls: 'danger' };
@@ -1600,12 +1604,13 @@ const RankcoAI = (() => {
   $('#gRules').onclick = () => modal(`<h3>RANKCO rules</h3><ul>
     <li><b>Goal:</b> be first to bring <b>both</b> tokens through <b>4 rounds</b> – one on each layer of the board – and into the centre.</li>
     <li><b>Enter:</b> roll a 6 to bring a token in – or spend 1 coin if you miss.</li>
-    <li><b>Move:</b> roll and promote a token clockwise. Each round is played on its own layer, working inwards: round 1 on the outer ring (★), round 2 on the next ring (★★), round 3 (★★★), round 4 on the inner ring (★★★★). Each round ends on an arrow in your colour – it leads you into the next layer’s home corner, and the last arrow leads into the centre. Your own tokens can’t skip each other.</li>
+    <li><b>Move:</b> roll and promote a token clockwise. Each round is played on its own layer, working inwards: round 1 on the outer ring (★), round 2 on the next ring (★★), round 3 (★★★), round 4 on the inner ring (★★★★). Each round ends on an arrow in your colour – it leads you into the next layer’s home corner, and the last arrow leads into the centre. Your own tokens can’t skip each other (unless one is frozen).</li>
     <li><b>Setbacks:</b> land on an opponent and their token goes back 6 tiles (repeating if that tile is taken). They can pay 1 coin to stay put.</li>
     <li><b>Salutation tile:</b> land on any soldier tile that isn’t your own colour’s (even if nobody is playing that colour) for 3 bonus moves.</li>
-    <li><b>Rolling a 6</b> earns a bonus roll. On a bonus roll you may instead reclaim a spent coin.</li>
-    <li><b>Freeze:</b> rolling a 1 with a token in round 3 or 4 (★★★ / ★★★★) freezes it – the token flips over to show its ice face. Frozen tokens can’t move or be set back. Unfreeze with a 6 or 1 coin. With a lower token in play you may promote that one instead.</li>
-    <li><b>Home corners</b> are safe from setbacks and freezing.</li></ul>`, [{ label: 'Got it' }]);
+    <li><b>Rolling a 6</b> earns a bonus roll. With the 6 you choose: promote a token, or reclaim a spent coin.</li>
+    <li><b>Exact finish:</b> a token must reach the centre by an exact roll – you can’t roll higher than the tiles remaining. The freeze never applies on the final step into the centre.</li>
+    <li><b>Freeze:</b> rolling a 1 with a token in round 3 or 4 (★★★ / ★★★★) freezes it – the token flips over to show its ice face. Frozen tokens can’t move or be set back. Unfreeze with a 6 or 1 coin. Your other token may skip past a frozen one, or share its tile.</li>
+    <li><b>Safe zone:</b> your own coloured tiles are safe – tokens there can’t be set back and don’t freeze on a 1.</li></ul>`, [{ label: 'Got it' }]);
 
   /* ===================================================================
      SCREEN 5 – results
