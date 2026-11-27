@@ -229,6 +229,13 @@ input{font:inherit}
 @keyframes glint{from{background-position:130% 0}to{background-position:-130% 0}}
 .tok .hit{width:calc(var(--d) * 1.15);height:calc(var(--d) * 1.15);left:calc(var(--d) * -.575);top:calc(var(--d) * -.575);pointer-events:auto;cursor:default}
 .tok.can .hit{cursor:pointer}
+.cu.can,#potg.can,.slot.can{cursor:pointer;animation:coinCan .9s ease-in-out infinite alternate}
+.cu.can{filter:drop-shadow(0 0 1.2px #ffe27a) drop-shadow(0 0 2.4px #ffb400)}
+#potg.can{filter:drop-shadow(0 0 1.6px #7dffb0) drop-shadow(0 0 3px #2fd27a)}
+.slot.can{stroke:#7dffb0;stroke-width:.8}
+.cu,#potg,.slot{transform-box:fill-box;transform-origin:center}
+@keyframes coinCan{from{opacity:.72}to{opacity:1}}
+.coinhint{display:block;margin-top:6px;font-size:12px;font-weight:700;color:#ffd978}
 .tok .halo{display:none;width:calc(var(--d) * 1.34);height:calc(var(--d) * 1.34);left:calc(var(--d) * -.67);top:calc(var(--d) * -.67);border:calc(var(--u,5px) * .24) dashed #fff;box-shadow:0 0 calc(var(--u,5px) * 1.2) rgba(255,255,255,.7)}
 .tok.can .halo{display:block;animation:haloSpin 3s linear infinite}
 @keyframes haloSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(180deg) scale(1.09)}100%{transform:rotate(360deg) scale(1)}}
@@ -760,7 +767,7 @@ const RankcoEngine = (() => {
         if (yardSeen || !startFree(P)) return;
         yardSeen = true;
         if (v === 6) free.push({ type: 'enter', token: t.id });
-        else if (P.coins > 0) paid.push({ type: 'enter_pay', token: t.id, paid: true });
+        else if (P.coins > 0 && P.tokens.every((x) => x.p === YARD)) paid.push({ type: 'enter_pay', token: t.id, paid: true });   // a coin only brings the FIRST token into play
       } else if (t.frozen) {
         if (v === 6) free.push({ type: 'unfreeze', token: t.id });
         if (P.coins > 0) paid.push({ type: 'unfreeze_pay', token: t.id, paid: true });
@@ -770,8 +777,8 @@ const RankcoEngine = (() => {
         free.push({ type: 'move', token: t.id });
       }
     });
-    if (v === 6 && P.spent > 0) free.push({ type: 'recover' });   // a 6: promote a token OR reclaim a spent coin
     if (free.length === 0) free.push({ type: 'pass', free0: true });
+    if (v === 6 && P.spent > 0) free.push({ type: 'recover' });   // a 6: promote a token OR reclaim a spent coin (always optional)
     // 'pass' is only a real choice when a paid alternative exists; otherwise it is automatic
     return free.concat(paid);
   }
@@ -1329,7 +1336,7 @@ const RankcoAI = (() => {
     h += `<rect x="40.5" y="40.5" width="19" height="19" rx="2.6" fill="#fff" stroke="#111" stroke-width=".9"/>`;
     h += window.LOGO_OK === false ? CENTRE_FALLBACK : `<image href="logo.png" x="44" y="44" width="12" height="12" preserveAspectRatio="xMidYMid meet"/>`;
     // the pot: spent coins pile up in the middle of the board
-    if (players.length) h += '<g id="potg">' + Array.from({ length: 8 }, (_, k) => { const [x, y] = potXY(k);
+    if (players.length) h += '<g id="potg"><circle class="phit" cx="50" cy="50" r="9" fill="#000" fill-opacity="0"/>' + Array.from({ length: 8 }, (_, k) => { const [x, y] = potXY(k);
       return `<g id="pot-${k}" style="display:none" transform="translate(${x.toFixed(2)} ${y.toFixed(2)})"><circle r="2.3" cx=".25" cy=".45" fill="rgba(0,0,0,.5)"/><use href="#rcoin" transform="scale(.044)"/></g>`; }).join('') + '</g>';
     // trays: waiting spots + the two recovery coins (3D tokens live in the HTML layer above the board)
     players.forEach((pl, pi) => {
@@ -1338,7 +1345,7 @@ const RankcoAI = (() => {
       [0, 1].forEach((i) => {
         const [yx, yy] = yardXY(pl.color, i), [cx, cy] = coinXY(pl.color, i);
         h += `<rect x="${(yx - 3.7).toFixed(2)}" y="${(yy - 3.7).toFixed(2)}" width="7.4" height="7.4" rx="1.4" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-opacity=".7" stroke-width=".45" stroke-dasharray="1.2 .9"/>
-              <g id="cs-${pi}-${i}" transform="translate(${cx} ${cy})"><circle class="slot" r="3.4" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.55)" stroke-width=".4" stroke-dasharray=".9 .8" style="display:none"/>
+              <g id="cs-${pi}-${i}" transform="translate(${cx} ${cy})"><circle class="chit" r="4.4" fill="#000" fill-opacity="0"/><circle class="slot" r="3.4" fill="rgba(0,0,0,.25)" stroke="rgba(255,255,255,.55)" stroke-width=".4" stroke-dasharray=".9 .8" style="display:none"/>
               <g class="cu"><circle r="3.5" cx=".3" cy=".55" fill="rgba(0,0,0,.4)"/><use href="#rcoin" transform="scale(.068)"/></g></g>`;
       });
     });
@@ -1500,6 +1507,7 @@ const RankcoAI = (() => {
   function renderControls() {
     const s = app.session.state, box = $('#controls'), st = $('#status');
     $$('.tok').forEach((t) => t.classList.remove('can'));
+    $$('.cu.can,.slot.can,#potg.can').forEach((e) => e.classList.remove('can'));
     app.opts = [];
     if (s.phase === 'over') { box.innerHTML = ''; st.innerHTML = 'Game over'; return; }
     if (app.busy || (app.online && app.online.sent)) { box.innerHTML = ''; return; }
@@ -1512,21 +1520,45 @@ const RankcoAI = (() => {
     }
     const opts = E.listOptions(s).map((o) => { const c = Object.assign({}, o); delete c.free0; return c; });
     app.opts = opts;
+    // coins are never forced on you: spending / reclaiming happens by tapping a coin
+    const canSpend = opts.some((o) => o.paid), canReclaim = opts.some((o) => o.type === 'recover');
+    const btns = (arr) => arr.map((o) => optBtn(o, opts.indexOf(o), s)).join('');
+    const plain = opts.filter((o) => !o.paid && o.type !== 'recover');
+    if (canSpend) for (let i = 0; i < actor.coins; i++) { const g = $('#cs-' + s.awaiting + '-' + i + ' .cu'); if (g) g.classList.add('can'); }
+    if (canReclaim) { const pg = $('#potg'); if (pg) pg.classList.add('can'); for (let i = actor.coins; i < 2; i++) { const g = $('#cs-' + s.awaiting + '-' + i + ' .slot'); if (g) g.classList.add('can'); } }
+    const hint = (canSpend ? `<span class="coinhint">🪙 Tap one of your coins to spend it – optional.</span>` : '') + (canReclaim ? `<span class="coinhint">🪙 Tap the pot (or an empty coin spot) to reclaim a coin instead.</span>` : '');
     if (s.phase === 'roll') {
-      st.innerHTML = `${esc(actor.name)}'s turn<small>${s.bonus ? 'Bonus roll – you rolled a 6!' : 'Roll the dice.'}</small>`;
-      box.innerHTML = `<button class="btn rollbtn" data-i="0">🎲 Roll dice</button>` + opts.slice(1).map((o, k) => optBtn(o, k + 1, s)).join('');
+      st.innerHTML = `${esc(actor.name)}'s turn<small>${s.bonus ? 'Bonus roll – you rolled a 6!' : 'Roll the dice.'}${hint}</small>`;
+      box.innerHTML = `<button class="btn rollbtn" data-i="0">🎲 Roll dice</button>`;
     } else if (s.phase === 'setback') {
       const pd = s.pending, by = s.players[pd.pi];
-      st.innerHTML = `${esc(actor.name)}<small>Your decision</small>`;
-      box.innerHTML = `<div class="alert">⚠ ${esc(by.name)} landed on your Token ${pd.victims[0].ti + 1}!</div>` + opts.map((o, k) => optBtn(o, k, s)).join('');
+      st.innerHTML = `${esc(actor.name)}<small>Your decision${canSpend ? '<span class="coinhint">🪙 Tap one of your coins to pay and hold your tile – or accept the setback.</span>' : ''}</small>`;
+      box.innerHTML = `<div class="alert">⚠ ${esc(by.name)} landed on your Token ${pd.victims[0].ti + 1}!</div>` + btns(plain);
     } else {
-      st.innerHTML = `${esc(actor.name)} rolled a ${s.roll}<small>${s.bonus ? 'Bonus roll · ' : ''}Choose what to do – or tap a glowing token.</small>`;
-      box.innerHTML = opts.map((o, k) => optBtn(o, k, s)).join('');
+      st.innerHTML = `${esc(actor.name)} rolled a ${s.roll}<small>${s.bonus ? 'Bonus roll · ' : ''}Choose what to do – or tap a glowing token.${hint}</small>`;
+      box.innerHTML = btns(plain);
       opts.forEach((o) => { if (!o.paid && ['move', 'enter', 'unfreeze'].includes(o.type)) $('#tok-' + s.awaiting + '-' + o.token).classList.add('can'); });
     }
     $$('[data-i]', box).forEach((b) => b.onclick = () => dispatch(app.opts[+b.dataset.i]));
   }
   function optBtn(o, i, s) { const v = optView(o, s); return `<button class="opt ${v.cls}" data-i="${i}"><span class="i">${v.i}</span><span>${v.a}<small>${v.b}</small></span></button>`; }
+
+  function onCoinTap(e) {
+    const hit = e.target.closest && e.target.closest('[id^="cs-"], #potg');
+    if (!hit || app.busy || !app.session || !app.opts.length) return;
+    const s = app.session.state;
+    let pick;
+    if (hit.id === 'potg') pick = app.opts.filter((o) => o.type === 'recover');
+    else {
+      const [, pi, i] = hit.id.split('-').map(Number);
+      if (pi !== s.awaiting) return;
+      pick = i < s.players[pi].coins ? app.opts.filter((o) => o.paid) : app.opts.filter((o) => o.type === 'recover');
+    }
+    if (!pick.length) return;
+    if (pick.length === 1) return dispatch(pick[0]);
+    modal('<h3>Spend a coin on…</h3>', pick.map((o) => ({ label: optView(o, s).a.replace(/^Spend 1 coin: /, ''), fn: () => dispatch(o) })).concat([{ label: 'Cancel', dark: true }]));
+  }
+  document.addEventListener('click', onCoinTap);
 
   function onTokenClick(e) {
     if (app.busy) return;
@@ -1640,7 +1672,8 @@ const RankcoAI = (() => {
     [{ label: 'Keep playing', dark: true }, { label: 'Leave game', fn: () => { app.loop++; app.busy = false; renderSetup(); go('setup'); } }]);
   $('#gRules').onclick = () => modal(`<h3>RANKCO rules</h3><ul>
     <li><b>Goal:</b> be first to bring <b>both</b> tokens through <b>4 rounds</b> – one on each layer of the board – and into the centre.</li>
-    <li><b>Enter:</b> roll a 6 to bring a token in – or spend 1 coin if you miss.</li>
+    <li><b>Enter:</b> roll a 6 to bring a token in. A coin can bring in your <b>first</b> token only – the second token always needs a 6.</li>
+    <li><b>Coins are optional:</b> tap one of your coins to spend it, or tap the pot to reclaim one when you roll a 6.</li>
     <li><b>Move:</b> roll and promote a token clockwise. Each round is played on its own layer, working inwards: round 1 on the outer ring (★), round 2 on the next ring (★★), round 3 (★★★), round 4 on the inner ring (★★★★). Each round ends on an arrow in your colour – it leads you into the next layer’s home corner, and the last arrow leads into the centre. Your own tokens can’t skip each other (unless one is frozen).</li>
     <li><b>Setbacks:</b> land on an opponent and their token goes back 6 tiles (repeating if that tile is taken). They can pay 1 coin to stay put.</li>
     <li><b>Salutation tile:</b> land on any soldier tile that isn’t your own colour’s (even if nobody is playing that colour) for 3 bonus moves.</li>
