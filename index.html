@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>RANKCO – Strategy. Luck. Decision Making. Risk Management.</title>
+<title>RANKCO – Strategy. Luck. Decision Making. Resource and Risk Management.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Orbitron:wght@900&display=swap" rel="stylesheet">
@@ -80,9 +80,8 @@ input{font:inherit}
 .sp-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:30px;padding:24px;text-align:center}
 .sp-logo{display:flex;flex-direction:column;align-items:center;position:relative}
 .sp-brand{display:flex;align-items:center;gap:clamp(12px,3vw,22px);animation:rise 1s .7s both}
-.sp-brand b{font-weight:800;font-size:clamp(14px,4.2vw,24px);letter-spacing:.42em;padding-left:.42em;white-space:nowrap;
-  background:linear-gradient(100deg,#e08a12 0%,#fff3b8 30%,#f7c948 50%,#e08a12 80%,#fff3b8 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 14px rgba(245,169,26,.45));animation:shimmer 4s linear infinite}
+.sp-brand b{display:block;line-height:0;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
+.sp-brand b svg.tw{display:block;height:clamp(20px,4.9vw,34px);width:auto;overflow:visible}
 .sp-line{height:1.5px;width:clamp(28px,11vw,96px);animation:lineGrow 1s 1s both}
 .sp-line.l{background:linear-gradient(90deg,transparent,#f5a91a);transform-origin:right}
 .sp-line.r{background:linear-gradient(270deg,transparent,#f5a91a);transform-origin:left}
@@ -504,7 +503,7 @@ body.olive .ol-dock{display:flex}
           </svg>
         </div>
       </div>
-      <div class="sp-brand"><span class="sp-line l"></span><b>SYCOARD GAMES</b><span class="sp-line r"></span></div>
+      <div class="sp-brand"><span class="sp-line l"></span><b id="spBrand" role="img" aria-label="SYCOARD GAMES">SYCOARD GAMES</b><span class="sp-line r"></span></div>
     </div>
   </section>
 
@@ -598,6 +597,44 @@ body.olive .ol-dock{display:flex}
   </div>
   <audio id="remoteAudio" autoplay playsinline></audio>
 </div>
+<script>
+/* Wide monoline techno lettering drawn as strokes (matches the Sycoard logo): white fill, thick black outline */
+window.techWord = function (text, o) {
+  o = o || {}; const H = 6, GAP = 2.3, SW = o.sw || 1.75, OUT = o.out || 1.5, r = 1.7;
+  const rr = (w) => `M${r},0H${w - r}Q${w},0 ${w},${r}V${H - r}Q${w},${H} ${w - r},${H}H${r}Q0,${H} 0,${H - r}V${r}Q0,0 ${r},0Z`;
+  const G = {
+    S: [8, 'M8,0H2L6,6H0'],
+    Y: [8, 'M0,0L4,3.2L8,0M4,3.2V6'],
+    C: [8, `M8,0H${r}Q0,0 0,${r}V${H - r}Q0,${H} ${r},${H}H8`],
+    O: [8, rr(8)],
+    A: [8, 'M0,6L4,0L8,6'],
+    R: [8, `M0,6V0H${8 - r}Q8,0 8,${r}Q8,3.2 ${8 - r},3.2H0M4,3.2L8,6`],
+    D: [8, `M0,0H${8 - r}Q8,0 8,${r}V${H - r}Q8,${H} ${8 - r},${H}H0Z`],
+    G: [8, `M8,0H${r}Q0,0 0,${r}V${H - r}Q0,${H} ${r},${H}H${8 - r}Q8,${H} 8,${H - r}V3.2H4.4`],
+    M: [9.5, 'M0,6V0L4.75,4L9.5,0V6'],
+    E: [8, 'M8,0H0V6H8M0,3H6'],
+    N: [8, 'M0,6V0L8,6V0'],
+    K: [8, 'M0,0V6M7.5,0L1.5,3L7.5,6'],
+    ' ': [3.5, '']
+  };
+  let x = 0, d = '';
+  for (const ch of text.toUpperCase()) {
+    const g = G[ch]; if (!g) continue;
+    if (g[1]) d += g[1].replace(/([MLHVQZ])([^MLHVQZ]*)/g, (m, c, args) => {         // shift x coordinates by the pen position
+      const n = args.trim() ? args.trim().split(/[\s,]+/).map(Number) : [];
+      if (c === 'H') n[0] += x;
+      else if (c === 'V' || c === 'Z') { /* y only */ }
+      else for (let i = 0; i < n.length; i += 2) n[i] += x;
+      return c + n.join(' ');
+    });
+    x += g[0] + GAP;
+  }
+  const w = x - GAP, pad = SW / 2 + OUT;
+  return `<svg class="tw" viewBox="${-pad} ${-pad} ${w + pad * 2} ${H + pad * 2}" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="${d}" stroke="#07070b" stroke-width="${SW + OUT * 2}"/><path d="${d}" stroke="#fff" stroke-width="${SW}"/></svg>`;
+};
+(function () { var b = document.getElementById('spBrand'); if (b) b.innerHTML = window.techWord('Sycoard Games'); })();
+</script>
 <script>
 /* Splash logo: fall back to the built-in emblem + wordmark if logo.png cannot be loaded */
 (function () {
