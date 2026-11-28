@@ -94,7 +94,13 @@ input{font:inherit}
 .bgb-tilt{--W:min(64vw,82vh,900px);--u:calc(var(--W) / 118);--rx:52deg;--rz:-30deg;position:relative;width:var(--W);transform-style:preserve-3d;
   transform:rotateX(var(--rx)) rotateZ(var(--rz));animation:bgDrift 26s ease-in-out infinite alternate}
 .bgb-tilt>svg{opacity:.7;filter:saturate(1.2) brightness(.92) drop-shadow(0 40px 60px rgba(0,0,0,.7))}
-@media (max-aspect-ratio:4/5){.bgb-tilt{--W:min(78vw,60vh,880px);--rx:44deg;--rz:-10deg}.bgboard{padding-top:52%;padding-bottom:0}#s-welcome .welcome-center{transform:translateY(-8vh)}#s-welcome .orbit{width:min(150vw,112vh,900px)}}
+@media (max-aspect-ratio:4/5){.bgb-tilt{--W:min(78vw,60vh,880px);--rx:44deg;--rz:-10deg}.bgb-tilt{--rx:38deg}#s-welcome{--D:min(108vw,96vh,900px)}}
+/* page 2: the board is sized from the orbit ring so it always sits inside the rotating dotted circle, centred on it, as a big diamond behind the words */
+#s-welcome{--D:min(104vw,96vh,900px)}
+#s-welcome .orbit{width:var(--D)}
+#s-welcome .bgboard{padding:0}
+#s-welcome .bgb-tilt{--W:calc(var(--D) * .62);--rz:-45deg}
+#s-welcome .play{margin-top:clamp(18px,6vh,80px)}
 .bgb-tilt svg{display:block;width:100%;height:auto}
 @keyframes bgDrift{from{transform:rotateX(calc(var(--rx) - 3deg)) rotateZ(calc(var(--rz) - 5deg)) translateY(-1%)}to{transform:rotateX(calc(var(--rx) + 3deg)) rotateZ(calc(var(--rz) + 6deg)) translateY(1%)}}
 .bg-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(46% 34% at 50% 58%,rgba(6,7,12,.7),rgba(6,7,12,.3) 62%,transparent 100%),linear-gradient(180deg,rgba(6,7,12,.55),transparent 22%,transparent 80%,rgba(6,7,12,.7))}
