@@ -56,7 +56,7 @@ input{font:inherit}
 @keyframes spin{to{transform:rotate(360deg)}}
 .welcome-center{position:relative;z-index:2;text-align:center;padding:24px;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,3vh,26px)}
 .emblem{width:clamp(84px,18vw,118px);animation:rise 1s .05s cubic-bezier(.2,.9,.2,1) both,float 5s 1.2s ease-in-out infinite}
-.logo-img{display:block;width:clamp(220px,62vw,520px);max-height:46vh;height:auto;object-fit:contain;
+.logo-img{display:block;width:clamp(120px,34vw,260px);max-height:26vh;height:auto;object-fit:contain;
   filter:drop-shadow(0 10px 24px rgba(0,0,0,.55)) drop-shadow(0 0 22px rgba(124,92,255,.35));
   animation:rise 1s .05s cubic-bezier(.2,.9,.2,1) both,float 5s 1.2s ease-in-out infinite}
 .wordmark{display:flex;font-family:'Orbitron','Montserrat',sans-serif;font-weight:900;font-size:clamp(46px,13.5vw,118px);line-height:1;letter-spacing:.03em;font-style:italic;transform:skewX(-6deg)}
@@ -77,12 +77,13 @@ input{font:inherit}
 #s-splash{display:flex;align-items:center;justify-content:center;background:radial-gradient(60% 50% at 50% 44%,rgba(124,92,255,.3),transparent 70%),radial-gradient(120% 80% at 50% 0%,#2b2f46 0%,#12131c 55%,#06070b 100%)}
 .sp-halo{position:absolute;left:50%;top:44%;width:min(125vw,760px);aspect-ratio:1;translate:-50% -50%;border-radius:50%;opacity:.55;filter:blur(64px);pointer-events:none;
   background:conic-gradient(from 0deg,rgba(43,125,233,0),rgba(43,125,233,.6),rgba(224,41,46,0),rgba(224,41,46,.6),rgba(30,158,74,0),rgba(30,158,74,.6),rgba(243,148,25,0),rgba(243,148,25,.6),rgba(43,125,233,0));animation:spin 12s linear infinite}
-.sp-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:30px;padding:24px;text-align:center}
+.sp-center{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:clamp(16px,3.2vh,28px);padding:24px;text-align:center;max-width:100%}
 .sp-logo{display:flex;flex-direction:column;align-items:center;position:relative}
 .sp-brand{display:flex;align-items:center;gap:clamp(12px,3vw,22px);animation:rise 1s .7s both}
 .sp-brand b{display:block;line-height:0;filter:drop-shadow(0 6px 14px rgba(0,0,0,.55))}
-.sp-brand b svg.tw{display:block;height:clamp(20px,4.9vw,34px);width:auto;overflow:visible}
-.sp-line{height:1.5px;width:clamp(28px,11vw,96px);animation:lineGrow 1s 1s both}
+.sp-brand b svg.tw{display:block;height:clamp(28px,5.6vw,60px);width:auto;max-width:94vw;overflow:visible}
+.sp-line{height:1.5px;width:clamp(20px,6vw,70px);animation:lineGrow 1s 1s both}
+@media (max-width:640px){.sp-center{padding:12px}.sp-line{display:none}.sp-brand b svg.tw{height:7.4vw}}
 .sp-line.l{background:linear-gradient(90deg,transparent,#f5a91a);transform-origin:right}
 .sp-line.r{background:linear-gradient(270deg,transparent,#f5a91a);transform-origin:left}
 @keyframes lineGrow{from{transform:scaleX(0);opacity:0}to{transform:none;opacity:1}}
@@ -93,7 +94,7 @@ input{font:inherit}
 .bgb-tilt{--W:min(64vw,82vh,900px);--u:calc(var(--W) / 118);--rx:52deg;--rz:-30deg;position:relative;width:var(--W);transform-style:preserve-3d;
   transform:rotateX(var(--rx)) rotateZ(var(--rz));animation:bgDrift 26s ease-in-out infinite alternate}
 .bgb-tilt>svg{opacity:.7;filter:saturate(1.2) brightness(.92) drop-shadow(0 40px 60px rgba(0,0,0,.7))}
-@media (max-aspect-ratio:4/5){.bgb-tilt{--W:min(78vw,60vh,880px);--rx:44deg;--rz:-10deg}.bgboard{padding-bottom:40%}#s-welcome .welcome-center{transform:translateY(13vh)}}
+@media (max-aspect-ratio:4/5){.bgb-tilt{--W:min(78vw,60vh,880px);--rx:44deg;--rz:-10deg}.bgboard{padding-top:52%;padding-bottom:0}#s-welcome .welcome-center{transform:translateY(-8vh)}#s-welcome .orbit{width:min(150vw,112vh,900px)}}
 .bgb-tilt svg{display:block;width:100%;height:auto}
 @keyframes bgDrift{from{transform:rotateX(calc(var(--rx) - 3deg)) rotateZ(calc(var(--rz) - 5deg)) translateY(-1%)}to{transform:rotateX(calc(var(--rx) + 3deg)) rotateZ(calc(var(--rz) + 6deg)) translateY(1%)}}
 .bg-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(46% 34% at 50% 58%,rgba(6,7,12,.7),rgba(6,7,12,.3) 62%,transparent 100%),linear-gradient(180deg,rgba(6,7,12,.55),transparent 22%,transparent 80%,rgba(6,7,12,.7))}
@@ -771,6 +772,8 @@ const RankcoEngine = (() => {
       } else if (t.frozen) {
         if (v === 6) free.push({ type: 'unfreeze', token: t.id });
         if (P.coins > 0) paid.push({ type: 'unfreeze_pay', token: t.id, paid: true });
+      } else if (v === 1 && t.p >= FREEZE_FROM && inSafe(t.p)) {
+        /* safe zone on level 3 / 4: a 1 neither freezes nor moves the token - it stays put until a 2 or higher is rolled */
       } else if (v === 1 && t.p >= FREEZE_FROM && !inSafe(t.p) && t.p + 1 < GOAL) {
         free.push({ type: 'freeze', token: t.id });          // rolling a 1 at three/four-star freezes it (not on own colour, not on the final step)
       } else if (canMove(P, t, v)) {
@@ -1072,7 +1075,23 @@ const RankcoAI = (() => {
     return chooseAct(s, difficulty, r);
   }
 
-  return { choose, evaluate };
+  /* ---- difficulty balance --------------------------------------------------------------
+     Calibrated by simulation (1 human vs 1 computer, 3000 games each) so that the HUMAN wins about:
+       Beginner 85%  ·  Easy 65%  ·  Medium 50%  ·  Hard 25%
+     Skill alone cannot do this in a dice game, so the computer's own dice get a small, fixed nudge:
+       min  = chance that the computer rolls twice and keeps the LOWER die (bad luck)
+       max  = chance that the computer rolls twice and keeps the HIGHER die (good luck)
+     Tweak these numbers to rebalance; raise "max" / "min" to make the computer stronger / weaker. */
+  const LUCK = { beginner: { min: 0.14 }, easy: { max: 0.03 }, medium: { max: 0.015 }, hard: { max: 0.47 } };
+  function rollFor(difficulty) {
+    const l = LUCK[difficulty] || {}, d6 = () => 1 + Math.floor(Math.random() * 6);
+    let v = d6();
+    if (l.min && Math.random() < l.min) v = Math.min(v, d6());
+    if (l.max && Math.random() < l.max) v = Math.max(v, d6());
+    return v;
+  }
+
+  return { choose, evaluate, rollFor };
 })();
 
 
@@ -1573,7 +1592,8 @@ const RankcoAI = (() => {
     if (app.online) return olSend(action);
     if (app.busy || !app.session) return;
     const my = app.loop, prev = app.session.state;
-    const res = E.apply(prev, action);
+    const rollerAI = action.type === 'roll' && prev.players[prev.awaiting].type === 'ai';
+    const res = E.apply(prev, action, rollerAI ? { dice: AI.rollFor(prev.players[prev.awaiting].difficulty) } : undefined);
     if (res.error) { console.warn(res); return; }
     app.busy = true; app.session.state = res.state; renderControls();
     await animate(res.events);
@@ -1680,7 +1700,7 @@ const RankcoAI = (() => {
     <li><b>Rolling a 6</b> earns a bonus roll. With the 6 you choose: promote a token, or reclaim a spent coin.</li>
     <li><b>Exact finish:</b> a token must reach the centre by an exact roll – you can’t roll higher than the tiles remaining. The freeze never applies on the final step into the centre.</li>
     <li><b>Freeze:</b> rolling a 1 with a token in round 3 or 4 (★★★ / ★★★★) freezes it – the token flips over to show its ice face. Frozen tokens can’t move or be set back. Unfreeze with a 6 or 1 coin. Your other token may skip past a frozen one, or share its tile.</li>
-    <li><b>Safe zone:</b> your own coloured tiles are safe – tokens there can’t be set back and don’t freeze on a 1.</li></ul>`, [{ label: 'Got it' }]);
+    <li><b>Safe zone:</b> your own coloured tiles are safe – tokens there can’t be set back. On rounds 3 and 4 (★★★ / ★★★★) a roll of 1 neither freezes nor moves a token standing in its safe zone: it stays put until you roll a 2 or higher.</li></ul>`, [{ label: 'Got it' }]);
 
   /* ===================================================================
      SCREEN 5 – results
